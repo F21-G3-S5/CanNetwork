@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<section class="job-form-section job-form-section--image">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="job-form-box">
+                    <h2 class="heading">
+                        Find a <span class="accent">job</span> you will
+                        <span class="accent">love</span>.
+                    </h2>
+                    <form id="job-main-form" method="get" asp-controller="Home" asp-action="Search" class="job-main-form">
+                        <div class="controls">
+                            <div class="row align-items-center">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="profession">Position</label>
+                                        <input type="text" id="profession" name="position"
+                                               placeholder="Position you are looking for" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="location">Location</label>
+                                        <input type="text" id="location" name="location"
+                                               placeholder="Any particular location?" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit"
+                                            class="btn btn-outline-white-primary job-main-form__button">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section style="background-image: url(~/img/meeting.jpg); " class="section-divider">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <p>Start searching for your new job now! </p>
+                <p><a asp-controller="Job" asp-action="Index" class="btn btn-outline-light">See our job offers </a></p>
+            </div>
+        </div>
+    </div>
+</section>
