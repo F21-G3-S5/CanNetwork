@@ -28,6 +28,21 @@ namespace CanNetwork.Controllers
             return View();
         }
 
+        public IActionResult Employer()
+        {
+            return View();
+        }
+
+        public ActionResult Search(String SearchByTitle, string SearchByLocation)
+
+        {
+
+            //Session["Searched"] = SearchByTitle.ToString();
+            //Session["Searched1"] = SearchByLocation.ToString();
+
+            return RedirectToAction("ShowEnquiredListOfJobsDescriptionAndLocation", "Jobs");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
