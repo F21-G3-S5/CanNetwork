@@ -1,0 +1,165 @@
+﻿@model IEnumerable<CanNetwork.Models.Contact>
+@using GridMvc.Html
+@{
+    ViewBag.Title = "Feedbacks";
+}
+
+<h2 class="text-primary mb-3">Feedbacks [@Model.Count()]</h2>
+
+@if (Model.Count() == 0)
+{
+
+
+    <div class="alert alert-danger">
+        No Feedbacks Yet!
+    </div>
+}
+else
+{
+    <div style="width: 100%">
+        @Html.Grid(Model).Columns(columns =>
+   {
+   columns.Add(c => c.Name).Titled("Name").Filterable(true);
+   columns.Add(c => c.Email).Titled("Email").Filterable(true);
+   columns.Add(c => c.Subject).Titled("Subject").Filterable(true);
+   columns.Add(c => c.Message).Titled("Message").Filterable(true).ToString().Substring(0, 20);
+   columns.Add()
+   .Encoded(false)
+   .Sanitized(false)
+   .RenderValueAs(o => @<button class="btn btn-primary detailsBtn" data-id="@o.Id" data-toggle="modal" data-target="#detailsModel">Details</button>)
+            .Filterable(false);
+            columns.Add()
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => @<button class="btn btn-danger deleteBtn" data-id="@o.Id">Delete</button>)
+            .Filterable(false);
+        }).WithPaging(6).Sortable(true)
+    </div>
+    @*
+        <table class="table table-responsive table-bordered">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Subject)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Message)
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Subject)
+                    </td>
+                    <td>
+                        @item.Message.Substring(0, 10) ...
+                    </td>
+                    <td>
+                        <button class="btn btn-primary detailsBtn" data-id="@item.Id" data-toggle="modal" data-target="#detailsModel">Details</button>
+                        <button class="btn btn-danger deleteBtn" data-id="@item.Id">Delete</button>
+                    </td>
+                </tr>
+            }
+        </table>
+    *@
+}
+
+<hr />
+
+<p>
+    @Html.ActionLink("Back To Home", "Index", "Home", null, new { @class = "btn btn-dark" })
+</p>
+
+<!-- Details Modal -->
+<div class="modal fade detailsModel" id="detailsModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-primary" id="exampleModalLabel" style="display: inline-block">Feedback Details</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="font-size: 40px;color: #ff0000">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+@section scripts{
+    <script>
+        $(() => {
+            // Details Feedback
+            detailsBtns = $(".detailsBtn");
+            [...detailsBtns].forEach(btn => {
+                $(btn).click(() => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Home/FeedbackDetails/" + id,
+                    }).done(data => {
+                        var resDate = `
+                            <div class="feedback">
+                                <b>Name: </b>
+                                <span>${data.result.Name}</span>
+                                <br />
+                                <b>Email: </b>
+                                <span>${data.result.Email}</span>
+                                <br />
+                                <b>Subject: </b>
+                                <span>${data.result.Subject}</span>
+                                <br />
+                                <b>Message: </b>
+                                <span>${data.result.Message}</span>
+                            </div>
+                        `;
+                        $(".detailsModel .modal-body").empty();
+                        $(".detailsModel .modal-body").append(resDate);
+                    });
+                });
+            });
+
+            // Delete Feedback
+            deleteBtns = $(".deleteBtn");
+            [...deleteBtns].forEach(btn => {
+                $(btn).click(() => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Home/DeleteFeedbaack/" + id,
+                        success: res => {
+                            swal({
+                                title: "Delete Feedbaack!",
+                                text: "You Deleted the Feedbaack Successfully!",
+                                icon: "success",
+                                button: null,
+                            });
+                            setTimeout(() => {
+                                location.reload();
+                            }, 3000);
+                        }
+                    })
+                })
+            })
+        });
+    </script>
+}

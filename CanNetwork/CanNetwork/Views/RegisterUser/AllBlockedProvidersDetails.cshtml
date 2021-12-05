@@ -1,0 +1,53 @@
+﻿@model IEnumerable<CanNetwork.Models.RegisterUser>
+@using GridMvc.Html
+@using CanNetwork.Context
+@{
+    MyDbContext db = new MyDbContext();
+}
+@{
+    ViewBag.Title = "All Blocked Providers";
+}
+
+<h2 class="text-primary mb-3">All Blocked Providers</h2>
+
+<div style="width: 100%">
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(c => c.Name).Titled("Name").Filterable(true);
+        columns.Add(c => c.CompanyName).Titled("Company Name").Filterable(true);
+
+        columns.Add()
+        .Titled("Num. of publish Jobs")
+        .Encoded(false)
+        .Sanitized(false)
+        .SetWidth(30)
+        .RenderValueAs(o => @<a href="~/Job/GetJobInCompany/@o.Id"><b>[@db.Jobs.Where(j => j.RegisterUserId == o.Id).Count()] Jobs</b></a>)
+        .Filterable(false);
+
+        columns.Add()
+        .Titled("Num. of Applicant")
+        .Encoded(false)
+        .Sanitized(false)
+        .SetWidth(30)
+        .RenderValueAs(o => @<b>[@db.ApplyedJobs.Where(a => a.Job.RegisterUserId == o.Id).Count()]</b>)
+        .Filterable(false);
+
+        columns.Add()
+            .Titled("User State")
+        .Encoded(false)
+        .Sanitized(false)
+        .SetWidth(30)
+        .RenderValueAs(o => @<b class="text-danger">Block</b>)
+        .Filterable(false);
+        columns.Add()
+        .Encoded(false)
+        .Sanitized(false)
+        .SetWidth(30)
+        .RenderValueAs(o => @Html.ActionLink("Details", "UserDetails", new { id = o.Id }, new { @class = "btn btn-primary" }))
+        .Filterable(false);
+
+    }).WithPaging(2).Sortable(true)
+
+</div>
+
+<hr />

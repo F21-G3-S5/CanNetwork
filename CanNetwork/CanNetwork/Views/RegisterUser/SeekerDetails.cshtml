@@ -1,0 +1,422 @@
+﻿@model CanNetwork.Models.SeekerRegistration
+@using CanNetwork.Context
+@{
+    MyDbContext db = new MyDbContext();
+    ViewBag.Title = "SeekerDetails";
+}
+
+<style>
+    button.close {
+        color: #fff;
+    }
+
+    .modal-dialog {
+        max-width: initial !important;
+        height: 100% !important;
+    }
+
+    .modal-content {
+        width: 90% !important;
+        height: 90% !important;
+        margin: auto;
+        background-color: #0e2b44;
+        color: #fff;
+        box-shadow: 0px 0px 7px 2px #0e2b44;
+    }
+    .first-section,
+    .second-section {
+        position: relative;
+    }
+
+        .first-section::before,
+        .second-section::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0px;
+            width: 4px;
+            height: 100%;
+            background-color: #ededed;
+        }
+
+    .info {
+        position: relative;
+    }
+
+    .likedBtn {
+        position: absolute;
+        right: 0;
+        cursor: pointer;
+    }
+
+    div.info div,
+    .previous-work div,
+    .Current-work div,
+    .education-info div {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        div.info div span:first-of-type,
+        .previous-work div span:first-of-type,
+        .Current-work div span:first-of-type,
+        .education-info div span:first-of-type {
+            width: 40%;
+            font-size: 17px;
+            font-weight: 500;
+        }
+
+            div.info div span:first-of-type::after,
+            .previous-work div span:first-of-type::after,
+            .Current-work div span:first-of-type::after,
+            .education-info div span:first-of-type::after {
+                content: " :";
+            }
+
+    .img {
+        padding-top: 100px;
+    }
+</style>
+
+<div style="position:relative">
+    @if (Session["UserName"] != null)
+    {
+        <button class="btn btn-info likedBtn" data-id="@Model.Id">
+            Like
+            <i class="fa fa-hand-o-up"></i>
+        </button>
+    }
+
+    <h2 class="text-primary mb-3">Seeker Details</h2>
+</div>
+
+<hr />
+
+<div class="row first-section">
+    <div class="col-md-6">
+        <div class="info">
+
+            <h4 class="text-primary mb-3 d-inline-block" style="border-bottom: 2px solid #0094ff">Main Info</h4>
+
+            <div>
+                <span>
+                    Name
+                </span>
+
+                <span>
+                    @Html.DisplayFor(model => model.Name)
+                </span>
+            </div>
+            <div>
+                <span>
+                    @Html.DisplayNameFor(model => model.Email)
+                </span>
+
+                <span>
+                    @Html.DisplayFor(model => model.Email)
+                </span>
+            </div>
+            <div>
+                <span>
+                    Address
+                </span>
+
+                <span>
+                    @Html.DisplayFor(model => model.City.CityName) - @Html.DisplayFor(model => model.Country.CountryName)
+                </span>
+            </div>
+            <div>
+                <span>
+                    Searching Job
+                </span>
+
+                <span>
+                    @Html.DisplayFor(model => model.SearchOnJobTitle)
+                </span>
+            </div>
+            <div>
+                <span>
+                    State
+                </span>
+
+                @if (Model.IsActive == true)
+                {
+                    <span>
+                        <b class="text-success">Active</b>
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        <b class="text-danger">Block</b>
+
+                    </span>
+                }
+            </div>
+            <div>
+                <span>
+                    Applied Jobs
+                </span>
+
+                <span>
+                    [@db.ApplyedJobs.Where(aj => aj.SeekerRegistrationId == Model.Id).Count()]
+                </span>
+            </div>
+            <div>
+                <span>
+                    Matched Jobs
+                </span>
+
+                <span>
+                    [@db.Jobs.Where(j => j.JobCategory.JobCategoryName == Model.SearchOnJobTitle).Count()]
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="education-info pl-4">
+            <h4 class="text-primary mb-3 d-inline-block" style="border-bottom: 2px solid #0094ff">Education Info</h4>
+
+            <div>
+                <span>
+                    University
+                </span>
+                <span>
+                    @Model.University.UniversityName
+                </span>
+            </div>
+            <div>
+                <span>
+                    Education Level
+                </span>
+                <span>
+                    @Model.EducationLevel.EducationLevelName
+                </span>
+            </div>
+            <div>
+                <span>
+                    Language
+                </span>
+                <span>
+                    @Model.Language.LanguageName
+                </span>
+            </div>
+            <div>
+                <span>
+                    Graduation Date
+                </span>
+                <span>
+                    @Model.GraduationDate
+                </span>
+            </div>
+
+            <div class="attr">
+                <span>
+                    CV
+                </span>
+
+                <span>
+                    <button type="button" id="cvBtn" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-cv="Upload/SeekersCv/@Model.SeekerCV">Review CV</button>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr style="width: 60%; height:2px; background-color: #ededed; margin: 20px auto" />
+
+<div class="row second-section">
+    <div class="col-md-6">
+        <div class="previous-work">
+            <h4 class="text-primary mb-3 d-inline-block" style="border-bottom: 2px solid #0094ff">Previous Work</h4>
+            @if (Model.CompanyName.ToString() == "none" || Model.Salary == 0)
+            {
+                <div class="alert alert-danger">Does not have a job previously</div>
+            }
+            else
+            {
+                <div>
+                    <span>
+                        Job Title
+                    </span>
+
+                    <span>
+                        @Model.JobTitle.JobTitleName
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        Job Category
+                    </span>
+
+                    <span>
+                        @Model.JobCategory.JobCategoryName
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        Company Name
+                    </span>
+
+                    <span>
+                        @Model.CompanyName
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        Duration
+                    </span>
+
+                    <span>
+                        @Model.Duration Year
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        Salary
+                    </span>
+
+                    <span>
+                        @Model.Salary$
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="Current-work pl-4">
+            <h4 class="text-primary mb-3 d-inline-block" style="border-bottom: 2px solid #0094ff">Current Work</h4>
+            @if (Model.CurrentCompanyName.ToString() == "none" || Model.CurrentSalary == 0)
+            {
+                <div class="alert alert-danger">Does not have a job currently</div>
+            }
+            else { 
+                <div>
+                    <span>
+                        Job Title
+                    </span>
+
+                    <span>
+                        @Model.CurrentJobTitle
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        Job Category
+                    </span>
+
+                    <span>
+                        @Model.CurrentJobCategory
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        Company Name
+                    </span>
+
+                    <span>
+                        @Model.CurrentCompanyName
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        Duration
+                    </span>
+
+                    <span>
+                        @Model.CurrentDuration Year
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        Salary
+                    </span>
+
+                    <span>
+                        @Model.CurrentSalary$
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<p class="mt-4">
+    @if (Session["AdminUser"] != null)
+    {
+        @Html.ActionLink("Back", "ShowAllSeekers", "RegisterUser", null, new { @class = "btn btn-dark" })
+    }
+
+    @if (Session["UserName"] != null && Session["JobTitle"] != null)
+    {
+        @Html.ActionLink("Back", "JobApplyersDetails", "Job", new { jobTitle = Convert.ToString(Session["JobTitle"]) }, new { @class = "btn btn-dark" })
+    }
+    @if (Session["UserName"] != null && Session["JobTitle"] == null)
+    {
+        @Html.ActionLink("Back To List", "ShowMatchedSeekers", null, new { @class = "btn btn-dark" })
+    }
+</p>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@Model.Name CV</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="CvIframe" style="width: 100%;height:100%"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+@section scripts{
+    <script>
+        $(() => {
+            $(".likedBtn").click(() => {
+                id = $(".likedBtn").data("id");
+                $.ajax({
+                    type: "GET",
+                    url: "/RegisterUser/LikeSeeker/" + id,
+                    success: res => {
+                        if (res.result == 1) {
+                            swal({
+                                title: "Liked Seeker!",
+                                text: "You Liked Seeker Successfully!",
+                                icon: "success",
+                                button: "OK",
+                            });
+                        } else {
+                            swal({
+                                title: "Liked Seeker!",
+                                text: "You Liked This Seeker Before!",
+                                icon: "error",
+                                button: "OK",
+                            });
+                        }
+                    },
+                })
+            });
+
+
+            $("#cvBtn").click(() => {
+                target = $("#cvBtn").data("cv");
+                cvIframe = $(".modal-body #CvIframe");
+                cvIframe.attr("src", "../../../../" + target);
+                cvIframe.fadeIn(1000);
+            });
+        });
+    </script>
+}

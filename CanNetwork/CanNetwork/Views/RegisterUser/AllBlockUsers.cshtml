@@ -1,0 +1,112 @@
+﻿@model CanNetwork.Models.SeekerProviderViewModel
+
+@{
+    ViewBag.Title = "AllBlockUsers";
+}
+
+<h2 class="text-primary mb-3">All Block Users</h2>
+
+<hr />
+
+<h4 class="text-dark d-inline-block mb-3" style="border-bottom: 2px solid #444;">Providers</h4>
+@if (Model.RegisterUsers.Count() == 0)
+{
+    <div class="alert alert-danger">
+        No Block Providers.
+    </div>
+}
+else
+{
+    <table class="table table-responsive table-bordered">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company Name</th>
+            <th>Job Title</th>
+            <th>State</th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.RegisterUsers)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Email</td>
+                <td>@item.CompanyName</td>
+                <td>@item.JobTitle.JobTitleName</td>
+                <td>
+                    <b class="text-danger">Block</b>
+                </td>
+                <td>
+                    @Html.ActionLink("Show Details", "UserDetails", "RegisterUser", new { id = item.Id }, new { @class = "btn btn-primary" })
+                </td>
+                <td></td>
+            </tr>
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                @Html.ActionLink("Show All", "AllBlockedProvidersDetails", "RegisterUser", null, new { @class = "btn btn-dark" })
+            </td>
+        </tr>
+    </table>
+}
+
+<hr />
+
+<h4 class="text-dark d-inline-block mb-3" style="border-bottom: 2px solid #444;">Seekers</h4>
+@if (Model.SeekerRegistrations.Count() == 0)
+{
+    <div class="alert alert-danger">
+        No Block Seekers.
+    </div>
+}
+else
+{
+    <table class="table table-responsive table-bordered">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Education Level</th>
+            <th>Address</th>
+            <th>State</th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.SeekerRegistrations)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Email</td>
+                <td>@item.EducationLevel.EducationLevelName</td>
+                <td>@item.City.CityName - @item.Country.CountryName</td>
+                <td>    
+                    <button class="btn btn-danger">Active</button>
+                </td>
+                <td>
+                    @Html.ActionLink("Show Profile", "SeekerDetails", "RegisterUser", new { id = item.Id }, new { @class = "btn btn-primary" })
+                </td>
+                <td></td>
+            </tr>
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                @Html.ActionLink("Show All", "AllBlockedSeekersDetails", "RegisterUser", null, new { @class = "btn btn-dark" })
+            </td>
+        </tr>
+    </table>
+}
+

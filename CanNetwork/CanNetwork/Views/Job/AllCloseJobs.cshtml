@@ -1,0 +1,79 @@
+﻿@model IEnumerable<CanNetwork.Models.Job>
+@using GridMvc.Html
+@{
+    ViewBag.Title = "AllCloseJobs";
+}
+
+<h2 class="text-primary mb-3">Closed Jobs [@Model.Where(j => j.JobState == false).Count()]</h2>
+
+<div style="width: 100%">
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(c => c.JobTitle).Titled("Job Title").Filterable(true);
+    columns.Add(c => c.JobCategory.JobCategoryName).Titled("Job Category").Filterable(true);
+    columns.Add(c => c.JobType.JobTypeName).Titled("Job Type").Filterable(true);
+    columns.Add(c => c.PublishedDate).Titled("Publish Date").Filterable(true);
+    columns.Add(c => c.JobState).Titled("Is Open").Filterable(false);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(o => @Html.ActionLink("Details", "Details", new { id = o.Id }, new { @class = "btn btn-primary" }))
+    .Filterable(false);
+
+}).WithPaging(2).Sortable(true)
+</div>
+
+@*
+    <table class="table table-bordered table-responsive">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.JobTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobCategory.JobCategoryName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobType.JobTypeName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PublishedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobState)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JobTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JobCategory.JobCategoryName)
+                </td>
+                <td>
+                    @item.JobDescription.Substring(0, 20) ....
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JobType.JobTypeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PublishedDate)
+                </td>
+                <td>
+                    <button class="btn btn-danger">Close</button>
+                </td>
+                <td>
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-primary" })
+                </td>
+            </tr>
+        }
+
+    </table>
+*@

@@ -1,0 +1,125 @@
+﻿@model CanNetwork.Models.SeekerProviderViewModel
+
+@{
+    ViewBag.Title = "AllSeekersAndProviders";
+}
+
+<h2 class="text-primary mb-3">All Seekers And Providers</h2>
+
+<hr />
+
+<h4 class="text-dark d-inline-block mb-3" style="border-bottom: 2px solid #444;">Providers</h4>
+@if (Model.RegisterUsers.Count() == 0)
+{
+    <div class="alert alert-danger">
+        No Providers Register Yet!
+    </div>
+}
+else
+{
+    <table class="table table-responsive table-bordered">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company Name</th>
+            <th>Job Title</th>
+            <th>State</th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.RegisterUsers)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Email</td>
+                <td>@item.CompanyName</td>
+                <td>@item.JobTitle.JobTitleName</td>
+                <td>
+                    @if (item.IsActive == true)
+                    {
+                        <b class="text-success">Active</b>
+                    }
+                    else
+                    {
+                        <b class="text-danger">Block</b>
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Show Details", "UserDetails", "RegisterUser", new { id = item.Id }, new { @class = "btn btn-primary" })
+                </td>
+                <td></td>
+            </tr>
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                @Html.ActionLink("Show All", "ShowAllUsers", "RegisterUser", null, new { @class = "btn btn-dark" })
+            </td>
+        </tr>
+    </table>
+}
+
+<hr />
+
+<h4 class="text-dark d-inline-block mb-3" style="border-bottom: 2px solid #444;">Seekers</h4>
+@if (Model.SeekerRegistrations.Count() == 0)
+{
+    <div class="alert alert-danger">
+        No Seekers Register Yet!
+    </div>
+}
+else
+{
+    <table class="table table-responsive table-bordered">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Education Level</th>
+            <th>Address</th>
+            <th>State</th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.SeekerRegistrations)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Email</td>
+                <td>@item.EducationLevel.EducationLevelName</td>
+                <td>@item.City.CityName - @item.Country.CountryName</td>
+                <td>
+                    @if (item.IsActive == true)
+                    {
+                        <b class="text-success">Active</b>
+                    }
+                    else
+                    {
+                        <b class="text-danger">Block</b>
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Show Profile", "Details", "RegisterUser", new { id = item.Id }, new { @class = "btn btn-primary" })
+                </td>
+                <td></td>
+            </tr>
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                @Html.ActionLink("Show All", "ShowAllSeekers", "RegisterUser", null, new { @class="btn btn-dark"})
+            </td>
+        </tr>
+    </table>
+}

@@ -1,0 +1,150 @@
+﻿@model CanNetwork.Models.SeekerProviderViewModel
+@using GridMvc.Html
+@using CanNetwork.Models
+@{
+    ViewBag.Title = "New Users In This Month";
+}
+
+<h2 class="text-primary mb-3">New Users In @DateTime.Now.ToString("MMMM")</h2>
+
+<hr />
+
+<h4 class="text-dark d-inline-block mb-3" style="border-bottom: 2px solid #444;">Providers</h4>
+@if (Model.RegisterUsers.Count() == 0)
+{
+    <div class="alert alert-danger">
+        No Register Provider In This Month Yet!
+    </div>
+}
+else
+{
+
+    @helper CustomRenderingOfColumn(RegisterUser registerUser)
+    {
+        if (registerUser.IsActive == true)
+        {
+            <b class="text-success">Active</b>
+        }
+        else
+        {
+            <b class="text-danger">block</b>
+        }
+    }
+
+    <div style="width: 100% ;margin-bottom: 40px">
+        @Html.Grid(Model.RegisterUsers).Columns(columns =>
+        {
+           columns.Add(o => o.Name)
+           .Titled("Name")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(o => o.CompanyName)
+           .Titled("Campany Name")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add()
+           .Titled("Publish Jobs")
+           .Encoded(false)
+           .Sanitized(false)
+           .RenderValueAs(o => @<a href="~/Job/GetJobInCompany/@Convert.ToInt32(o.Id)">[ @o.Jobs.Count() ]</a>)
+.Filterable(true)
+.Sortable(true);
+
+columns.Add()
+.Titled("State")
+.Encoded(false)
+.Sanitized(false)
+.RenderValueAs(a => CustomRenderingOfColumn(a))
+.Filterable(false)
+.Sortable(false);
+
+columns.Add(o => o.RegistrationDate)
+.Titled("Registration Date")
+.Filterable(true)
+.Sortable(true);
+
+columns.Add()
+.Titled("Actions")
+.Encoded(false)
+.Sanitized(false)
+.RenderValueAs(a => Html.ActionLink("Show Details", "UserDetails", "RegisterUser", new { id = a.Id }, new { @class = "btn btn-primary" }))
+.Filterable(false)
+.Sortable(false);
+
+}).WithPaging(4).Sortable(true)
+    </div>
+}
+
+<h4 class="text-dark d-inline-block mb-3" style="border-bottom: 2px solid #444;">Seekers</h4>
+@if (Model.SeekerRegistrations.Count() == 0)
+{
+    <div class="alert alert-danger">
+        No Register Seeker In This Month Yet!
+    </div>
+}
+else
+{
+
+    @helper CustomRenderingOfColumn2(SeekerRegistration seeker)
+    {
+        if (seeker.IsActive == true)
+        {
+            <b class="text-success">Active</b>
+        }
+        else
+        {
+            <b class="text-danger">block</b>
+        }
+    }
+
+    <div style="width: 100% ;margin-bottom: 40px">
+        @Html.Grid(Model.SeekerRegistrations).Columns(columns =>
+        {
+           columns.Add(o => o.Name)
+           .Titled("Name")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(o => o.Email)
+           .Titled("E-mail")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(o => o.SearchOnJobTitle)
+           .Titled("Search On Job Title")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add()
+           .Titled("State")
+           .Encoded(false)
+           .Sanitized(false)
+           .RenderValueAs(a => CustomRenderingOfColumn2(a))
+           .Filterable(false)
+           .Sortable(false);
+
+           columns.Add(o => o.RegistrationDate)
+           .Titled("Registration Date")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add()
+           .Titled("Actions")
+           .Encoded(false)
+           .Sanitized(false)
+           .RenderValueAs(a => Html.ActionLink("Show Details", "SeekerDetails", "RegisterUser", new { id = a.Id }, new { @class = "btn btn-primary" }))
+           .Filterable(false)
+           .Sortable(false);
+
+        }).WithPaging(4).Sortable(true)
+    </div>
+            
+}
+
+<hr />
+
+<p>
+    @Html.ActionLink("Back To Dashboard", "Index", "AdminViewModel", null, new { @class = "btn btn-dark" })
+</p>

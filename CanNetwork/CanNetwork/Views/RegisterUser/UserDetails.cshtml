@@ -1,0 +1,99 @@
+﻿@model CanNetwork.Models.RegisterUser
+@using CanNetwork.Context
+@{
+    MyDbContext db = new MyDbContext();
+    ViewBag.Title = "ProviderDetails";
+}
+
+<h2 class="text-primary mb-3">Provider Details</h2>
+    <hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <dl class="dl-horizontal">
+            <dt>
+                Personal Photo
+            </dt>
+
+            <dd>
+                <img src="~/Upload/ProvidersImage/@Model.ProviderImage" alt="providerImage" class="img-fluid img-thumbnail" width="150" />
+            </dd>
+
+            <dt>
+                Name
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Email)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Email)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.CompanyName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CompanyName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CompanyField)
+            </dt>
+
+            <dd>
+                @{
+                    var obj = db.JobCategories.Find(Convert.ToInt32(Model.CompanyField));
+                    var name = obj.JobCategoryName;
+                }
+                @name
+            </dd>
+
+
+            <dt>
+                Job Title
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.JobTitle.JobTitleName)
+            </dd>
+
+            <dt>
+                Publish Jobs
+            </dt>
+
+            <dd>
+                @Html.ActionLink("[" + Model.Jobs.Count() + "] Jobs", "GetJobInCompany", "Job", new { id = Model.Id }, new { @class = "text-dark" })
+            </dd>
+
+            <dt>State</dt>
+            @if (Model.IsActive == true)
+            {
+                <dd>
+                    <b class="text-success">Active</b>
+                </dd>
+            }
+            else
+            {
+                <dd>
+                    <b class="text-danger">Block</b>
+                </dd>
+            }
+
+        </dl>
+    </div>
+    <div class="col-md-6">
+        <img src="~/Images/personal_info.png" alt="image" class="img-fluid"/>    
+    </div>
+</div>
+
+<hr />
+
+<p>
+    @Html.ActionLink("Back", "ShowAllUsers", "RegisterUser", null, new { @class = "btn btn-dark" })
+</p>

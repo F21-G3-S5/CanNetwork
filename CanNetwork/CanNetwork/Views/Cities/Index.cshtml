@@ -1,0 +1,238 @@
+﻿@model IEnumerable<CanNetwork.Models.City>
+@using CanNetwork.Models
+@using GridMvc.Html
+@using CanNetwork.Context
+
+@{
+    MyDbContext db = new MyDbContext();
+    ViewBag.Title = "Cities | Index";
+}
+
+<h2 class="text-primary mb-3">Manage Cities [@Model.Count()]</h2>
+
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#createModal" style="display: block;margin:10px 0px 20px">Create New City</button>
+
+@if (Model.Count() == 0)
+{
+    <hr />
+    <div class="alert alert-danger">No Cities Added Yet!</div>
+}
+else
+{
+    @helper CustomRenderingOfColumn(City city)
+    {
+        MyDbContext db = new MyDbContext();
+        var totalUsers = db.SeekerRegistrations.Where(s => s.City.CityName == city.CityName).Count();
+        var totalJobs = db.Jobs.Where(j => j.City.CityName == city.CityName).Count();
+        if (totalUsers == 0 && totalJobs == 0)
+        {
+            <button class="btn btn-info editBtn" data-id="@city.Id" data-toggle="modal" data-target="#editModal">Edit</button>
+            <button class="btn btn-danger deleteBtn" data-id="@city.Id">Delete</button>
+        }
+        else
+        {
+            <button class="btn btn-info editBtn" data-id="@city.Id" data-toggle="modal" data-target="#editModal">Edit</button>
+        }
+    }
+
+    <div style="width: 100%">
+        @Html.Grid(Model).Columns(columns =>
+        {
+            columns.Add(o => o.CityName)
+            .Titled("City Name")
+            .Filterable(true)
+            .Sortable(true);
+
+            columns.Add()
+            .Titled("Total Users")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => @<b>[@db.SeekerRegistrations.Where(s => s.City.CityName == o.CityName).Count()]</b>)
+            .Filterable(false);
+
+            columns.Add()
+            .Titled("Total Jobs")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => @<b>[@db.Jobs.Where(j => j.City.CityName == o.CityName).Count()]</b>)
+            .Filterable(false);
+
+            columns.Add()
+            .Titled("Actions")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => CustomRenderingOfColumn(o))
+            .Sortable(true);
+
+            }).WithPaging(4).Sortable(true)
+    </div>
+
+    <hr />
+}
+
+<p>
+    @Html.ActionLink("Back", "Index", "AdminViewModel", null, new { @class = "btn btn-dark" })
+</p>
+
+<!-- Create Modal -->
+<div class="modal fade createModel" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-success" id="exampleModalLabel" style="display: inline-block">Creatr New City</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="font-size: 40px;color: #ff0000">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="errDiv" class="alert alert-danger" style="display: none">Please Fill All Input To Create New Category!</div>
+                <form id="createForm">
+                    <div class="form-group">
+                        <label for="CityName" class="form-control-label">County Name:</label>
+                        @Html.DropDownList("CountryId", null, new { @class = "form-control", id = "CountryId" })
+                    </div>
+                    <div class="form-group">
+                        <label for="CityName" class="form-control-label">City Name:</label>
+                        <input type="text" class="form-control" id="CityName" name="CityName">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="createBtn">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade editModal" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-primary" id="exampleModalLabel" style="display: inline-block">Edit City</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="font-size: 40px;color: #ff0000">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="edit-content">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="editBtn">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+@section scripts{
+    <script>
+        $(() => {
+            // Create City
+            $("#createBtn").click(() => {
+                if ($("#CityName").val() == "") {
+                    $("#errDiv").fadeIn(1000);
+                    $("#errDiv").fadeOut(8000);
+                } else {
+                    myData = $("#createForm").serialize();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Cities/Create",
+                        data: myData,
+                        success: (res) => {
+                            if (res.result == 1) {
+                                swal({
+                                    title: "Create City!",
+                                    text: "You Create the City Successfully!",
+                                    icon: "success",
+                                    button: null,
+                                });
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 3000)
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Delete City
+            deleteBtns = $(".deleteBtn");
+            [...deleteBtns].forEach(btn => {
+                $(btn).on("click", () => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Cities/Delete/" + id,
+                        success: (res) => {
+                            if (res.result == 1) {
+                                swal({
+                                    title: "Delete City!",
+                                    text: "You Deleted the City Successfully!",
+                                    icon: "error",
+                                    button: null,
+                                });
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 3000)
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Edit City [GET/POST]
+            //GET
+            editBtns = $(".editBtn");
+            [...editBtns].forEach(btn => {
+                $(btn).on("click", () => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Cities/Edit/" + id,
+                    }).done(function (data) {
+                        var values = `
+                        <form id="editForm">
+                            <input type="hidden" id="cityId" value="${data.Id}" />
+                            <input type="hidden" id="countryId" value="${data.CountryId}" />
+                            <div class="form-group">
+                                <label for="cityName" class="form-control-label">City Name:</label>
+                                <input type="text" class="form-control" id="cityName" name="CityName" value="${data.CityName}">
+                            </div>
+                        </form>
+                        `
+                        $(".editModal #edit-content").empty();
+                        $(".editModal #edit-content").append(values);
+                    });
+                });
+            });
+            //POST
+            $("#editBtn").click(() => {
+                editCityName = $("#cityName").val(),
+                    cityId = $("#cityId").val(),
+                    countryId = $("#countryId").val(),
+                    editFormData = { Id: cityId, CityName: editCityName, CountryId: countryId };
+                $.ajax({
+                    type: "POST",
+                    url: "/Cities/Edit",
+                    data: editFormData,
+                    success: (res) => {
+                        if (res.result == 1) {
+                            swal({
+                                title: "Edit City",
+                                text: "Edit City Successfully!",
+                                icon: "success",
+                                button: null
+                            });
+                            setTimeout(() => {
+                                location.reload();
+                            }, 3000)
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

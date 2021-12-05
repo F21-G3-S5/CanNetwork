@@ -1,0 +1,129 @@
+﻿@model CanNetwork.Models.Job
+
+@{
+    ViewBag.Title = "Delete | Job";
+}
+
+<h2 class="text-primary mb-3">Delete Job</h2>
+
+<h3 class="text-danger">Are you sure you want to delete this?</h3>
+
+<hr />
+
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.JobTitle)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.JobTitle)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.JobCategory.JobCategoryName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.JobCategory.JobCategoryName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.JobDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.JobDescription)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Vacancy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Vacancy)
+        </dd>
+
+        <dt>
+            Job Type
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.JobType.JobTypeName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NeededExperience)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NeededExperience)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Age)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Age)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Salary)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Salary)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.City.CityName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.City.CityName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Country.CountryName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Country.CountryName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CareerLevel)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CareerLevel)
+        </dd>
+
+        <dt>Job State</dt>
+
+        <dd>
+            @if (Model.JobState == true)
+            {
+                <b type="button" class="text-success">Open</b>
+            }
+            else
+            {
+                <b class="text-danger">Closed</b>
+            }
+        </dd>
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-danger" />
+        </div>
+    }
+</div>
+
+<hr />
+
+<p>
+    @Html.ActionLink("Back to List", "ShowPublishedJobs", null, new { @class="btn btn-dark"})
+</p>

@@ -1,0 +1,385 @@
+﻿@model IEnumerable<CanNetwork.Models.Job>
+@using CanNetwork.Context;
+@{
+    MyDbContext db = new MyDbContext();
+    var catogries = db.JobCategories.ToList();
+    ViewBag.Title = "Index";
+}
+
+<style>
+    .job {
+        position: relative;
+        background-color: #fbfbfb;
+        border: 1px solid #e4e4e4;
+        border-radius: 3px;
+        box-shadow: 0px 0px 2px 1px #e9ecef;
+        padding: 20px 15px;
+    }
+
+        .job .menu-toggler {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 40px;
+            height: 15px;
+            background-color: #d6d6d6;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 999;
+        }
+
+            .job .menu-toggler span {
+                display: inline-block;
+                margin: 0px 2px;
+                width: 5px;
+                height: 5px;
+                border-radius: 50%;
+                background-color: #001d38;
+                cursor: pointer;
+            }
+
+        .job .actions-menu {
+            position: absolute;
+            display: none;
+            padding: 10px;
+            background-color: #001d38;
+            text-align: center;
+            border-radius: 3px;
+            top: 28px;
+            right: 0px;
+            z-index: 99;
+        }
+
+            .job .actions-menu::before {
+                content: " ";
+                position: absolute;
+                top: -20px;
+                right: 12px;
+                border: 10px solid;
+                border-color: transparent transparent #001d38;
+            }
+
+        .job .openJob,
+        .job .closeJob {
+            position: absolute;
+            top: -12px;
+            left: -8px;
+            padding: 2px 10px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 3px;
+            color: #f9f9f9
+        }
+
+        .job .icon {
+            position: absolute;
+            font-size: 50px;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ccc;
+        }
+
+        .job .job-content h3 {
+            color: #0a8cff;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .job .job-content p {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .job .job-content span {
+            color: #004085;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+</style>
+
+<h2 class="text-primary mb-3">Number Of Jobs [@ViewBag.JobsCount]</h2>
+
+<div id="errMsg" class="alert alert-danger" style="display: none">
+    Please Select Search By ... From Select Box
+</div>
+
+@using (Html.BeginForm("Index", "Job", FormMethod.Post, new { @class = "row" }))
+{
+    <div class="form-group col-12 d-flex align-items-center mb-2">
+        <select id="selectInput" class="custom-select" name="searchVector" required>
+            <option value="default" disabled selected>Search By</option>
+            <option value="JobCategory.JobCategoryName">Job Category</option>
+            <option value="JobTitle">Job Title</option>
+            <option value="JobType.JobTypeName">Job Type</option>
+            <option value="City.CityName">City</option>
+            <option value="Country.CountryName">Country</option>
+            <option value="CareerLevel">Career Level</option>
+        </select>
+
+        @Html.TextBox("searchName", null, new { @class = "col-md-8 col-8 ml-3 mr-2 form-control", placeholder = "Search For Jobs.." })
+
+        <button id="searchBtn" type="submit" class="btn btn-info col-md-2 col-3">Search</button>
+    </div>
+}
+
+@if (ViewBag.SeekerState == false)
+{
+    <div class="alert alert-danger mt-3">
+        You Are Blocked From Admin Can't Apply For Any Job - Contact With Admin and Try Again.
+    </div>
+}
+
+@if (ViewBag.UserState == false)
+{
+    <div class="alert alert-danger mt-3">
+        You Are Blocked From Admin Can't Add Any Job - Contact With Admin and Try Again.
+    </div>
+}
+
+<hr />
+
+@if (Session["UserName"] != null && ViewBag.UserState == true)
+{
+    <p>
+        @Html.ActionLink("Create New Job", "Create", null, new { @class = "btn btn-success mb-3" })
+    </p>
+}
+
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-danger">No Matched Jobs</div>
+}
+
+@foreach (var category in catogries)
+{
+    if (Model.Where(j => j.JobCategory.JobCategoryName == category.JobCategoryName).Count() > 0)
+    {
+        <h3 class="text-primary pb-1 pr-1 mt-2 mb-4 d-inline-block" style="border-bottom: 2px solid #0a8cff;">
+            <i class="fa fa-dot-circle-o"></i>
+            @category.JobCategoryName 
+        </h3>
+
+        <div class="row mt-3">
+            @foreach (var item in Model.Where(j => j.JobCategory.JobCategoryName == category.JobCategoryName).ToList())
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="job">
+                        @if (Session["SeekerUser"] != null)
+                        {
+                            <div class="menu-toggler" data-id="@item.Id">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <div class="actions-menu" id="menu_@item.Id">
+                                <button class="btn btn-success d-block m-auto likedBtn" data-id="@item.Id">
+                                    Like
+                                    <i class="fa fa-hand-o-up"></i>
+                                </button>
+                                <button class="btn btn-danger d-block mt-2 reportBtn" data-id="@item.Id">
+                                    Report
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        }
+                        @if (item.JobState == true)
+                        {
+                            <span class="openJob bg-success">Open</span>
+                        }
+                        else
+                        {
+                            <span class="closeJob bg-danger">Closed</span>
+                        }
+                        <i class="fa fa-snowflake-o icon"></i>
+                        <div class="job-content">
+                            <h3>@item.JobTitle</h3>
+                            <p class="mb-2">@item.JobCategory.JobCategoryName</p>
+                            <span>
+                                <i class="fa fa-map-marker"></i>
+                                @item.City.CityName-@item.Country.CountryName
+                            </span> |
+                            <span>@item.JobType.JobTypeName</span> |
+                            <span>@item.Salary $</span> <br />
+                            <span>Experience +@item.NeededExperience years</span>  <br />
+                            <span>
+                                <i class="fa fa-graduation-cap"></i>
+                                @item.CareerLevel
+                            </span> |
+                            <span>Age: +@item.Age year</span> <br />
+                            <span>Vacancy: @item.Vacancy position</span><br />
+                            <span>
+                                <i class="fa fa-clock-o"></i>
+                                @item.PublishedDate
+                            </span>
+                        </div>
+
+                        <div class="job-footer mt-3">
+                            @*if (Session["SeekerUser"] != null && @ViewBag.SeekerState == true && item.JobState == true)
+                                {
+                                    <button class="btn btn-success applyBtn" data-id="@item.Id">Apply Now</button>
+                                }*@
+                            @if(Session["UserName"] == null) { 
+                                <button class="btn btn-success applyBtn" data-id="@item.Id">Apply Now</button>
+                            }
+                            @Html.ActionLink("Show Details", "Details", new { id = @item.Id }, new { @class = "btn btn-primary" })
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+        <hr />
+    }
+
+}
+
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+@section scripts{
+    <script>
+        $(() => {
+            $("#searchBtn").click(() => {
+                if ($("#selectInput").val() == null) {
+                    $("#errMsg").slideDown(500);
+                    setTimeout(() => {
+                        $("#errMsg").slideUp(500);
+                    }, 5000)
+                    return false;
+                }
+            });
+
+            allApplyBtns = $(".applyBtn");
+            [...allApplyBtns].forEach(btn => {
+                $(btn).on("click", () => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Job/ApplyJob/" + id,
+                        success: (result) => {
+                            if (result.res == 1) {
+                                swal({
+                                    title: "Apply Job!",
+                                    text: "You Applyed For Job Successfully!",
+                                    icon: "success",
+                                    button: "OK",
+                                });
+                            }
+                            else if (result.res == "unauthorized") {
+                                swal({
+                                    title: "Apply Job!",
+                                    text: "You Are unauthorized Please Log in And Try Again!",
+                                    icon: "error",
+                                    button: null,
+                                });
+                                setTimeout(() => {
+                                    location.href = "RegisterUser/LoginForAll";
+                                }, 5000)
+                            }
+                            else if (result.res == "Blocked") {
+                                swal({
+                                    title: "Apply Job!",
+                                    text: "You Are Blocked From Admin Can't Apply For Jobs Now!",
+                                    icon: "error",
+                                    button: "OK",
+                                });
+                            }
+                            else if (result.res == "Closed") {
+                                swal({
+                                    title: "Apply Job!",
+                                    text: "The Job Is Closed Can't Apply For This Job Now!",
+                                    icon: "error",
+                                    button: "OK",
+                                });
+                            }
+                            else {
+                                swal({
+                                    title: "Apply Job!",
+                                    text: "You Applyed For This Job Before!",
+                                    icon: "error",
+                                    button: "OK",
+                                });
+                            }
+                        },
+                    })
+                });
+            });
+
+            allTogglerBtns = $(".menu-toggler");
+            [...allTogglerBtns].forEach(btn => {
+                $(btn).click(() => {
+                    id = $(btn).data("id");
+                    $(`#menu_${id}`).slideToggle(200);
+
+                    $("body, .job-content").hover(() => {
+                        $(`#menu_${id}`).slideUp(200);
+                    });
+                });
+            });
+
+            alllikedBtns = $(".likedBtn");
+            [...alllikedBtns].forEach(btn => {
+                $(btn).click(() => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Job/LikedJob/" + id,
+                        success: res => {
+                            if (res.result == 1) {
+                                swal({
+                                    title: "Save Job!",
+                                    text: "You Liked This Job Successfully!",
+                                    icon: "success",
+                                    button: "OK",
+                                });
+                            } else if (res.result == 2) {
+                                swal({
+                                    title: "Save Job!",
+                                    text: "You Saved This Job Before!",
+                                    icon: "error",
+                                    button: "OK",
+                                });
+                            } else {
+                                location.href = "../RegisterUser/LoginForAll";
+                            }
+                        },
+                    })
+                });
+            });
+
+            allReportBtns = $(".reportBtn");
+            [...allReportBtns].forEach(btn => {
+                $(btn).click(() => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Job/ReportedJob/" + id,
+                        success: res => {
+                            if (res.result == 1) {
+                                swal({
+                                    title: "Reported Job!",
+                                    text: "You Reported This Job Successfully!",
+                                    icon: "success",
+                                    button: "OK",
+                                });
+                            } else if (res.result == 2) {
+                                swal({
+                                    title: "Reported Job!",
+                                    text: "You Reported This Job Before!",
+                                    icon: "error",
+                                    button: "OK",
+                                });
+                            } else {
+                                location.href = "../RegisterUser/LoginForAll";
+                            }
+                        },
+                    })
+                });
+            });
+        });
+    </script>
+}

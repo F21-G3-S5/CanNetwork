@@ -1,0 +1,75 @@
+﻿@model CanNetwork.Models.Blog
+
+@{
+    ViewBag.Title = "Post Details";
+}
+
+<style>
+    .post {
+        width: 75%;
+        margin: auto;
+        background: #eee;
+        box-shadow: 0px 0px 2px 4px #ccc;
+        padding: 20px;
+        border-radius: 3px;
+    }
+
+        .post .post-img {
+            position: relative;
+        }
+
+            .post .post-img img {
+                width: 100%;
+                height: 350px;
+                border-radius: 3px;
+                object-fit: fill;
+            }
+
+            .post .post-img .postDate {
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                background-color: #444;
+                color: #f9f9f9;
+                padding: 12px 8px;
+                border-bottom-left-radius: 3px;
+                border-top-right-radius: 3px;
+                box-shadow: 0px 0px 2px 1px #eee;
+            }
+
+        .post .post-content h2 {
+            font-weight: 600;
+            color: #444;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+        }
+
+        .post .post-content p {
+            font-style: italic;
+        }
+</style>
+
+<h2 class="text-primary mb-3">Post Details</h2>
+
+<hr />
+
+<div class="post">
+    <div class="post-img">
+        <img src="~/Upload/PostsImage/@Model.PostImage" alt="image" class="img-fluid" />
+        <span class="postDate">@Model.PublishDate</span>
+    </div>
+    <div class="post-content">
+        <h2>@Model.PostTitle</h2>
+        <p>@Model.PostContent</p>
+
+        @if (Session["AdminUser"] != null)
+        {
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-info mr-1" })
+            @Html.ActionLink("Delete", "Delete", new { id = Model.Id }, new { @class = "btn btn-danger" })
+        }
+    </div>
+</div>
+
+<hr />
+
+@Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-dark" })

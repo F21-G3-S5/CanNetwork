@@ -1,0 +1,288 @@
+﻿@model CanNetwork.Models.Job
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<style>
+    .job-details h2 {
+        color: #444;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .job-details > span {
+        color: #777;
+    }
+
+    .job-details p {
+        margin-top: 10px;
+        line-height: 1.7em;
+        color: #555;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        font-size: 15px;
+    }
+
+    .field {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        .field span:first-of-type {
+            width: 33%;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .field span:last-of-type {
+            color: #555;
+        }
+
+    .editBtn {
+        position: absolute;
+        top: 50%;
+        right: 25px;
+        transform: translateY(-50%);
+        cursor: pointer;
+    }
+</style>
+
+<div class="header" style="position: relative">
+    <h2 class="text-primary mb-3">[ @Model.JobTitle ] Details</h2>
+    @if(Session["AdminUser"] != null) { 
+        <button class="btn btn-dark editBtn" data-id="@Model.Id" data-toggle="modal" data-target="#editModal">Edit Job State</button>
+    }
+</div>
+
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="job-details">
+            <h2 class="mt-3">@Model.JobTitle</h2>
+            <span>@Model.JobCategory.JobCategoryName</span>
+            <p>@Model.JobDescription</p>
+
+            <hr style="width: 60%" />
+
+            <div class="fields mt-2">
+                <div class="field">
+                    <span>Company Name: </span>
+                    <span>@Model.RegisterUser.CompanyName</span>
+                </div>
+                <div class="field">
+                    <span>Job Type: </span>
+                    <span>@Model.JobType.JobTypeName</span>
+                </div>
+                <div class="field">
+                    <span>Career Level: </span>
+                    <span>@Model.CareerLevel</span>
+                </div>
+                <div class="field">
+                    <span>Vacancy: </span>
+                    <span>@Model.Vacancy Positions</span>
+                </div>
+                <div class="field">
+                    <span>Salary: </span>
+                    <span>@Model.Salary$</span>
+                </div>
+                <div class="field">
+                    <span>Experience: </span>
+                    <span>+@Model.NeededExperience Years</span>
+                </div>
+                <div class="field">
+                    <span>Location: </span>
+                    <span>@Model.City.CityName - @Model.Country.CountryName</span>
+                </div>
+                <div class="field">
+                    <span>Job State: </span>
+                    <span>
+                        @if (Model.JobState == true)
+                        {
+                            <b class="text-success">Open</b>
+                        }
+                        else
+                        {
+                            <b class="text-danger">Close</b>
+                        }
+                    </span>
+                </div>
+            </div>
+
+            <hr style="width: 60%" />
+
+            <div class="mt-2">
+                <i class="fa fa-clock-o" style="color: #15173c"></i>
+                @Model.PublishedDate
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="job-Img">
+            <img src="~/Images/undraw_informed_decision_p2lh.png" alt="job image" class="img-fluid" />
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<p>
+    @if (Session["UserName"] != null)
+    {
+       @* @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-info mr-1" })*@
+        @Html.ActionLink("Back to Jobs", "Index", null, new { @class = "btn btn-dark" })
+    }
+    else
+    {
+        @Html.ActionLink("Back To Jobs", "Index", null, new { @class = "btn btn-dark" })
+    }
+
+    
+        <button class="btn btn-success applyBtn" data-id="@Model.Id">Apply Now</button>
+</p>
+
+
+<!-- Edit Modal -->
+<div class="modal fade editModal" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-primary" id="exampleModalLabel" style="display: inline-block">Edit Job State</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="font-size: 40px;color: #ff0000">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="edit-content">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="editBtn">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+@section scripts{
+    <script>
+        $(() => {
+            allApplyBtns = $(".applyBtn");
+            [...allApplyBtns].forEach(btn => {
+                $(btn).on("click", () => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Job/ApplyJob/" + id,
+                        success: (result) => {
+                            if (result.res == 1) {
+                                swal({
+                                    title: "Apply Job!",
+                                    text: "You Applyed For Job Successfully!",
+                                    icon: "success",
+                                    button: "OK",
+                                });
+                            }
+                            else if (result.res == "unauthorized") {
+                                swal({
+                                    title: "Apply Job!",
+                                    text: "You Are unauthorized Please Log in And Try Again!",
+                                    icon: "error",
+                                    button: null,
+                                });
+                                setTimeout(() => {
+                                    location.href = "../../RegisterUser/LoginForAll";
+                                }, 5000)
+                            }
+                            else if (result.res == "Blocked") {
+                                swal({
+                                    title: "Apply Job!",
+                                    text: "You Are Blocked From Admin Can't Apply For Jobs Now!",
+                                    icon: "error",
+                                    button: "OK",
+                                });
+                            }
+                            else if (result.res == "Closed") {
+                                swal({
+                                    title: "Apply Job!",
+                                    text: "The Job Is Closed Can't Apply For This Job Now!",
+                                    icon: "error",
+                                    button: "OK",
+                                });
+                            }
+                            else {
+                                swal({
+                                    title: "Apply Job!",
+                                    text: "You Applyed For This Job Before!",
+                                    icon: "error",
+                                    button: "OK",
+                                });
+                            }
+                        },
+                    })
+                });
+            });
+
+            // Edit Job [GET/POST]
+            //GET
+            $(".editBtn").on("click", () => {
+                id = $(".editBtn").data("id");
+                console.log(id);
+                $.ajax({
+                    type: "GET",
+                    url: "/Job/EditJobState/" + id,
+                }).done(function (data) {
+                    var values = `
+                        <form id="editForm">
+                            <input type="hidden" disabled id="jobId" name="Id" value="${data.id}" />
+                            <div class="form-group">
+                                <label class="form-control-label">Job State: </label>
+                                <select class="custom-select" id="jobState" name="JobState">
+                                    <option value="${data.jobState}">${(data.jobState == false) ? 'Block' : 'Active'}</option>
+                                    <option value="${!data.jobState}">${(!data.jobState == false) ? 'Block' : 'Active'}</option>
+                                </select>
+                            </div>
+                        </form>
+                    `
+                    $(".editModal #edit-content").empty();
+                    $(".editModal #edit-content").append(values);
+                });
+            });
+            //POST
+            $("#editBtn").click(() => {
+                jobState = $("#jobState").val(),
+                    jobId = $("#jobId").val(),
+                    editFormData = { Id: jobId, JobState: (jobState == 'false' ? false : true) };
+                $.ajax({
+                    type: "POST",
+                    url: "/Job/EditJobState",
+                    data: editFormData,
+                    success: (res) => {
+                        if (res.result == 1) {
+                            swal({
+                                title: "Edit Job State",
+                                text: "Edit Job State Successfully!",
+                                icon: "success",
+                                button: null
+                            });
+                            setTimeout(() => {
+                                location.reload();
+                            }, 3000);
+                        } else {
+                            swal({
+                                title: "Edit Job State Failed",
+                                text: "Edit Job State Error!",
+                                icon: "error",
+                                button: null
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

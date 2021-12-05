@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.31829.152
+VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanNetwork", "CanNetwork\CanNetwork.csproj", "{6A2BC0C4-BFE7-4BD9-A35F-95ED6F0BD4E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanNetwork", "CanNetwork\CanNetwork.csproj", "{D70E3F49-86FB-4CB9-ADA0-19FAE4F08C16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6A2BC0C4-BFE7-4BD9-A35F-95ED6F0BD4E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A2BC0C4-BFE7-4BD9-A35F-95ED6F0BD4E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A2BC0C4-BFE7-4BD9-A35F-95ED6F0BD4E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A2BC0C4-BFE7-4BD9-A35F-95ED6F0BD4E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D70E3F49-86FB-4CB9-ADA0-19FAE4F08C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D70E3F49-86FB-4CB9-ADA0-19FAE4F08C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D70E3F49-86FB-4CB9-ADA0-19FAE4F08C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D70E3F49-86FB-4CB9-ADA0-19FAE4F08C16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0EC0F54F-5471-4C16-85FD-8A3145129AE1}
+		SolutionGuid = {FE239964-DF79-47C5-8099-AB93FE7E6B09}
 	EndGlobalSection
 EndGlobal

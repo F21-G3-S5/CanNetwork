@@ -1,0 +1,233 @@
+﻿@model IEnumerable<CanNetwork.Models.Country>
+@using CanNetwork.Models
+@using GridMvc.Html
+@using CanNetwork.Context
+
+@{
+    MyDbContext db = new MyDbContext();
+    ViewBag.Title = "Countries | Index";
+}
+
+<h2 class="text-primary mb-3">Manage Countries [@Model.Count()]</h2>
+
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#createModal" style="display: block;margin:10px 0px 20px">Create New Country</button>
+@if (Model.Count() == 0)
+{
+    <hr />
+    <div class="alert alert-danger">No Countries Added Yet!</div>
+}
+else
+{
+    @helper CustomRenderingOfColumn(Country country)
+    {
+        MyDbContext db = new MyDbContext();
+        var totalUsers = db.SeekerRegistrations.Where(s => s.Country.CountryName == country.CountryName).Count();
+        var totalJobs = db.Jobs.Where(j => j.Country.CountryName == country.CountryName).Count();
+        if (totalUsers == 0 && totalJobs == 0)
+        {
+            <button class="btn btn-info editBtn mr-1" data-id="@country.Id" data-toggle="modal" data-target="#editModal">Edit</button>
+            <button class="btn btn-danger deleteBtn" data-id="@country.Id">Delete</button>
+        }
+        else
+        {
+            <button class="btn btn-info editBtn mr-1" data-id="@country.Id" data-toggle="modal" data-target="#editModal">Edit</button>
+        }
+    }
+
+    <div style="width: 100%">
+        @Html.Grid(Model).Columns(columns =>
+        {
+           columns.Add(o => o.CountryName)
+           .Titled("Country Name")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add()
+           .Titled("Total Users")
+           .Encoded(false)
+           .Sanitized(false)
+           .RenderValueAs(o => @<b>[@db.SeekerRegistrations.Where(s => s.Country.CountryName == o.CountryName).Count()]</b>)
+            .Filterable(false);
+
+            columns.Add()
+            .Titled("Total Jobs")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => @<b>[@db.Jobs.Where(j => j.Country.CountryName == o.CountryName).Count()]</b>)
+            .Filterable(false);
+
+
+            columns.Add()
+            .Titled("Actions")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => CustomRenderingOfColumn(o))
+            .Sortable(true);
+
+        }).WithPaging(4).Sortable(true)
+    </div>
+
+    <hr />
+}
+
+<p>
+    @Html.ActionLink("Back", "Index", "AdminViewModel", null, new { @class = "btn btn-dark" })
+</p>
+
+<!-- Create Modal -->
+<div class="modal fade createModel" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-success" id="exampleModalLabel" style="display: inline-block">Creatr New City</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="font-size: 40px;color: #ff0000">&times;</span>
+                </button>
+            </div>
+            <div class="alert alert-danger" id="errDiv" style="display:none">Please Fill The City Name Input!</div>
+            <div class="modal-body">
+                <div id="errDiv" class="alert alert-danger" style="display: none">Please Fill All Input To Create New Category!</div>
+                <form id="createForm">
+                    <div class="form-group">
+                        <label for="CountryName" class="form-control-label">Country Name:</label>
+                        <input type="text" class="form-control" id="CountryName" name="CountryName">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="createBtn">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade editModal" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-primary" id="exampleModalLabel" style="display: inline-block">Creatr New Category</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="font-size: 40px;color: #ff0000">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="edit-content">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="editBtn">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+@section scripts{
+    <script>
+        $(() => {
+            // Create Country
+            $("#createBtn").click(() => {
+                if ($("#CountryName").val() == "") {
+                    $("#errDiv").fadeIn(1000);
+                    $("#errDiv").fadeOut(8000);
+                } else {
+                    myData = $("#createForm").serialize();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Country/Create",
+                        data: myData,
+                        success: (res) => {
+                            if (res.result == 1) {
+                                swal({
+                                    title: "Create Country!",
+                                    text: "You Create the Country Successfully!",
+                                    icon: "success",
+                                    button: null,
+                                });
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 3000)
+                            }
+                        },
+                    });
+                }
+            });
+
+            // Delete City
+            deleteBtns = $(".deleteBtn");
+            [...deleteBtns].forEach(btn => {
+                $(btn).on("click", () => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Country/Delete/" + id,
+                        success: (res) => {
+                            if (res.result == 1) {
+                                swal({
+                                    title: "Delete Country!",
+                                    text: "You Deleted the Country Successfully!",
+                                    icon: "error",
+                                    button: null,
+                                });
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 3000)
+                            }
+                        },
+                    });
+                });
+            });
+
+            // Edit City [GET/POST]
+            //GET
+            editBtns = $(".editBtn");
+            [...editBtns].forEach(btn => {
+                $(btn).on("click", () => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Country/Edit/" + id,
+                    }).done(function (data) {
+                        var values = `
+                                                                    <form id="editForm">
+                                                                        <input type="hidden" id="countryId" value="${data.Id}" />
+                                                                        <div class="form-group">
+                                                                            <label for="countryName" class="form-control-label">Country Name:</label>
+                                                                            <input type="text" class="form-control" id="countryName" name="CountryName" value="${data.CountryName}">
+                                                                        </div>
+                                                                    </form>
+                                                                    `
+                        $(".editModal #edit-content").empty();
+                        $(".editModal #edit-content").append(values);
+                    });
+                });
+            });
+            //POST
+            $("#editBtn").click(() => {
+                editCountryName = $("#countryName").val(),
+                    countryId = $("#countryId").val(),
+                    editFormData = { Id: countryId, CountryName: editCountryName };
+                $.ajax({
+                    type: "POST",
+                    url: "/Country/Edit",
+                    data: editFormData,
+                    success: (res) => {
+                        if (res.result == 1) {
+                            swal({
+                                title: "Edit Country",
+                                text: "Edit Country Successfully!",
+                                icon: "success",
+                                button: null
+                            });
+                            setTimeout(() => {
+                                location.reload();
+                            }, 3000)
+                        }
+                    },
+                });
+            });
+        });
+    </script>
+}

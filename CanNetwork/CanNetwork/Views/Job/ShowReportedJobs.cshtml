@@ -1,0 +1,86 @@
+﻿@model IEnumerable<CanNetwork.Models.ReportedJob>
+
+@{
+    ViewBag.Title = "Show Reported Jobs";
+}
+@using GridMvc.Html
+
+<h2 class="text-primary mb-3">Reported Jobs [@Model.Count()]</h2>
+
+<hr />
+
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-danger">
+        No Reported Jobs Yet!
+    </div>
+}
+else
+{
+
+    <div style="width: 100%">
+        @Html.Grid(Model).Columns(columns =>
+        {
+            columns.Add(c => c.Job.JobTitle).Titled("Job Title").Filterable(true);
+            columns.Add(c => c.Job.JobCategory.JobCategoryName).Titled("Job Category").Filterable(true);
+            columns.Add(c => c.Job.JobType.JobTypeName).Titled("Job Type").Filterable(true);
+            columns.Add(c => c.ReportedDate).Titled("Publish Date").Filterable(true);
+            columns.Add()
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => @<a href="Details/@o.JobId" class="btn btn-primary">Details</a>)
+            .Filterable(false);
+            columns.Add()
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => @<a href="javascript:void(0)" class="btn btn-danger deleteBtn" data-id="@o.Id">Delete</a>)
+            .Filterable(false);
+
+        }).WithPaging(4).Sortable(true)
+    </div>
+
+}
+
+    <hr />
+
+    <p>
+        @Html.ActionLink("Back", "Index", "Home", null, new { @class = "btn btn-dark" })
+    </p>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    @section scripts{
+        <script>
+            $(() => {
+                allDeleteBtns = $(".deleteBtn");
+                [...allDeleteBtns].forEach(btn => {
+                    $(btn).click(() => {
+                        id = $(btn).data("id");
+                        $.ajax({
+                            type: "Get",
+                            url: "/Job/DeleteReportedJob/" + id,
+                            success: res => {
+                                if (res.result == 1) {
+                                    swal({
+                                        title: "Delete Reported Job!",
+                                        text: "You Deleted the Reported Job Successfully!",
+                                        icon: "success",
+                                        button: null,
+                                    });
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 3000);
+                                } else {
+                                    swal({
+                                        title: "Delete Reported Job!",
+                                        text: "Delete the Reported Job Failer!",
+                                        icon: "error",
+                                        button: null,
+                                    });
+                                }
+                            },
+                        });
+                    });
+                });
+            });
+        </script>
+    }

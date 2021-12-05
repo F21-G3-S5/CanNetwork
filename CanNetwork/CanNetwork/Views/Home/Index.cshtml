@@ -1,100 +1,257 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model CanNetwork.Models.HomeViewModel
+
+@{
+    ViewBag.Title = "Home Page";
 }
 
-<!DOCTYPE html>
-<html lang="en">
+<style>
+    .header-info {
+        padding: 0px 0px 100px;
+        position: relative;
+    }
 
-<head>
+        .header-info h1 {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #6c63ff;
+            margin-bottom: 25px;
+        }
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+        .header-info p {
+            line-height: 1.8em;
+            font-size: 15px;
+            color: #666;
+        }
 
-    <title>Home</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700|Work+Sans:300,400,700" rel="stylesheet">
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")fonts/icomoon/style.css">
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")css/bootstrap.min.css">
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")css/magnific-popup.css">
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")css/jquery-ui.css">
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")css/owl.carousel.min.css">
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")css/bootstrap-datepicker.css">
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")css/animate.css">
+        .header-info svg {
+            position: absolute;
+            bottom: 0px;
+        }
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mediaelement@4.2.7/build/mediaelementplayer.min.css">
+    .jobsInEachCity,
+    .Today-Jobs,
+    .companies {
+        background-color: #eee;
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 3px;
+    }
 
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")fonts/flaticon/font/flaticon.css">
+        .jobsInEachCity h2,
+        .Today-Jobs h2,
+        .companies h2{
+            position: relative;
+            display: inline-block;
+            color: #333;
+            margin-bottom: 30px;
+        }
 
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")css/aos.css">
-    <link rel="stylesheet" href="@Url.Content("~/Content/main/")css/style.css">
+            .jobsInEachCity h2::after,
+            .Today-Jobs h2::after,
+            .companies h2::after{
+                content: '';
+                position: absolute;
+                bottom: -8px;
+                left: 0px;
+                width: 100%;
+                height: 3px;
+                background-color: #333;
+            }
 
-</head>
+        .jobsInEachCity .cityJobs a,
+        .companies .companyJobs a{
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            border-radius: 3px;
+            background-color: #ddd;
+            box-shadow: 0px 0px 4px 2px #ccc;
+            color: #444;
+        }
 
-    <section class="job-form-section job-form-section--image">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <div class="job-form-box">
-                        <h2 class="heading">
-                            Find a <span class="accent">job</span> you will
-                            <span class="accent">love</span>.
-                        </h2>
-                        <form id="job-main-form" method="get" asp-controller="Home" asp-action="Search" class="job-main-form">
-                            <div class="controls">
-                                <div class="row align-items-center">
-                                    <div class="col-md-5">
-                                        <div class="form-group">
-                                            <label for="profession">Position</label>
-                                            <input type="text" id="profession" name="position"
-                                                   placeholder="Position you are looking for" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <div class="form-group">
-                                            <label for="location">Location</label>
-                                            <input type="text" id="location" name="location"
-                                                   placeholder="Any particular location?" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="submit"
-                                                class="btn btn-outline-white-primary job-main-form__button">
-                                            <i class="fa fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+    .cityJobs span,
+    .companyJobs span{
+        letter-spacing: 0.5px;
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    .job {
+        padding: 20px;
+        border-radius: 3px;
+        background-color: #ddd;
+        box-shadow: 0px 0px 4px 2px #ccc;
+        color: #444;
+    }
+
+        .job h4 {
+            text-transform: capitalize;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .job span {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .job p {
+            line-height: 1.4em;
+            color: #555;
+            margin-top: 10px;
+        }
+</style>
+
+
+@if (Convert.ToBoolean(Session["flag"]) == true)
+{
+    <div id="msg2" class="alert alert-success">
+        @Session["message"]
+    </div>
+     
+        Session["flag"] = false;
+    
+}
+
+@if(ViewBag.success != null)
+{
+    <div id="msg" class="alert alert-success">
+        @ViewBag.success
+    </div>
+}
+
+<div class="header">
+    <div class="row">
+        <div class="col-lg-6 mb-3 mb-lg-0">
+            <div class="header-info">
+                <h1 style="font-size: 46px;margin-top: 0px;font-family: 'Comic Sans MS';">
+                    <span style="font-size: 26px">Welcom To</span>
+                    <br />
+                    CanNetwork
+                    <br />
+                    <span style="font-size: 26px;display: block;margin-top: 5px !important;">Find Your Dream Job</span>
+                </h1>
+                <p style="text-align: justify">CanNetwork is an interactive social platform, where different event organizers and employers are brought together. Here event organizers and employers together post about several events along with various job postings related to a similar category. Students can search for several events and jobs posted they can directly apply online to volunteer for those social events. Later they can even convert it to a secure part-time/full-time job. As a consequence, students can get a chance to socialize with different communities and can expand their network. They can gain foreign experience easily by being volunteers.</p>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#6c63ff" fill-opacity="1" d="M0,32L43.6,160L87.3,224L130.9,32L174.5,224L218.2,160L261.8,288L305.5,160L349.1,64L392.7,288L436.4,96L480,288L523.6,288L567.3,64L610.9,160L654.5,256L698.2,128L741.8,160L785.5,32L829.1,64L872.7,224L916.4,160L960,256L1003.6,96L1047.3,128L1090.9,256L1134.5,160L1178.2,64L1221.8,192L1265.5,256L1309.1,128L1352.7,96L1396.4,160L1440,160L1440,320L1396.4,320L1352.7,320L1309.1,320L1265.5,320L1221.8,320L1178.2,320L1134.5,320L1090.9,320L1047.3,320L1003.6,320L960,320L916.4,320L872.7,320L829.1,320L785.5,320L741.8,320L698.2,320L654.5,320L610.9,320L567.3,320L523.6,320L480,320L436.4,320L392.7,320L349.1,320L305.5,320L261.8,320L218.2,320L174.5,320L130.9,320L87.3,320L43.6,320L0,320Z"></path></svg>
             </div>
         </div>
-    </section>
-
-
-    <section style="background-image: url(~/img/meeting.jpg); " class="section-divider">
-        <div class="overlay"></div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <p>Start searching for your new job now! </p> 
-                    <p><a asp-controller="Job" asp-action="Index" class="btn btn-outline-light">See our job offers </a></p>
-
-                    <div class="row align-items-center">
-                        <div class="col-md-3">
-                        </div>
-                        <div class="col-md-3">
-                        </div>
-
-                        <div class="col-md-3">
-                            <input type="submit" class="btn btn-search btn-primary btn-block" value="Search">
-                        </div>
-                    </div>
-                </div>
+        <div class="col-lg-6">
+            <div class="header-img">
+                <p></p>
+                <p></p>
+                <img src="~/Images/undraw_online_resume_re_ru7s.png" alt="image" class="img-fluid" />
             </div>
         </div>
-    </section>
+    </div>
+</div>
+
+<hr />
+
+<div class="Today-Jobs">
+    <h2>Today Jobs</h2>
+    <div class="row">
+        @if (Model.Jobs.Where(j => j.PublishedDate.Day == DateTime.Now.Day).Count() == 0)
+        {
+            <div class="col-12 text-center alert alert-danger">
+                No Jobs Added In Portal Today Yet!
+            </div>
+        }
+        else
+        {
+            foreach (var job in Model.Jobs.Where(j => j.PublishedDate.Day == DateTime.Now.Day).ToList())
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="job">
+                        <h4>@job.JobTitle</h4>
+                        <span>@job.JobCategory.JobCategoryName</span>
+                        <p>@job.JobDescription.Substring(0, 30) ....</p>
+                        @Html.ActionLink("Show Details", "Details", "Job", new { id = job.Id }, new { @class = "btn btn-primary" })
+                    </div>
+                </div>
+            }
+        }
+        </div>
+</div>
+
+<hr />
+
+<div class="jobsInEachCity">
+    <h2>Jobs In Each City</h2>
+    <br />
+    @if (Model.Countries.Count() == 0)
+    {
+        <div class="col-12 text-center alert alert-danger">
+            No Cities Added In Portal Yet!
+        </div>
+    }
+    else
+    {
+        foreach (var country in Model.Countries)
+        {
+            <h3 class="mb-4 pb-2 pr-1 d-inline-flex" style="font-family: 'Comic Sans MS';letter-spacing: 1px;border-bottom: 3px solid #444">
+                <i class="fa fa-dot-circle-o"></i> 
+                @country.CountryName
+            </h3>
+
+            <div class="row">
+                @foreach (var city in Model.Cities.Where(c => c.CountryId == country.Id).ToList())
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="cityJobs">
+                            <a href="/Job/GetJobInCity/@city.Id">
+                                <span>
+                                    <i class="fa fa-dot-circle-o text-dark"></i>
+                                    @city.CityName
+                                </span>
+                                <span>(@Model.Jobs.Where(j => j.CityId == city.Id).Count())</span>
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+            <hr />
+        }
+    }
+</div>
+
+<hr />
+
+<div class="companies">
+    <h2>Companies In Portal</h2>
+    <div class="row">
+        @if (Model.RegisterUsers.Count() == 0) {
+            <div class="col-12 text-center alert alert-danger">
+                No Companies In Portal Yet!
+            </div>
+        }else{
+            foreach (var company in Model.RegisterUsers)
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="companyJobs">
+                        <a href="/Job/GetJobInCompany/@company.Id">
+                            <span>
+                                <i class="fa fa-pagelines text-dark"></i>
+                                @company.CompanyName
+                            </span>
+                            <span>Jobs (@Model.Jobs.Where(j => j.RegisterUser.CompanyName == company.CompanyName).Count())</span>
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(() => {
+            setTimeout(() => {
+                $("#msg").slideUp(500);
+            }, 3000);
+            setTimeout(() => {
+                $("#msg2").slideUp(500);
+            }, 3000);
+
+        });
+    </script>
+    }

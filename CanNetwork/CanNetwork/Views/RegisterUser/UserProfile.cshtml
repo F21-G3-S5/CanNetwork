@@ -1,0 +1,165 @@
+﻿@model CanNetwork.Models.RegisterUser
+@using CanNetwork.Context
+@{
+    MyDbContext db = new MyDbContext();
+
+    ViewBag.Title = "User Profile";
+}
+
+<style>
+    .info {
+        position: relative;
+    }
+    .editProfile {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+    }
+    .info img {
+        width: 100px;
+    }
+
+        .info .likedBtn {
+            position: absolute;
+            right: 0;
+            cursor: pointer;
+        }
+
+    div.info div {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        div.info div span:first-of-type {
+            width: 33%;
+            font-size: 17px;
+            font-weight: 500;
+        }
+
+            div.info div span:first-of-type::after {
+                content: " :";
+            }
+</style>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="info pt-4">
+            <h2 class="text-primary mb-3">@Model.Name Profile</h2>
+            @if (Session["UserName"] != null)
+            {
+                <p class="editProfile">
+                    @Html.ActionLink("Edit Profile", "EditProfile", "RegisterUser", new { id = Session["UserId"] }, new { @class = "btn btn-dark" })
+                    @Html.ActionLink("Change Password", "ChangePassword", "RegisterUser", new { name = @Session["UserName"].ToString() }, new { @class = "btn btn-primary d-block p-2 m-1" })
+                </p>
+            }
+            <hr />
+            <div>
+                <img src="~/Upload/ProvidersImage/@Model.ProviderImage" alt="provider image" class="img-fluid img-thumbnail" />
+            </div>
+
+            <div>
+                <span>
+                    Name
+                </span>
+
+                <span>
+                    @Html.DisplayFor(model => model.Name)
+                </span>
+            </div>
+            <div>
+                <span>
+                    @Html.DisplayNameFor(model => model.Email)
+                </span>
+
+                <span>
+                    @Html.DisplayFor(model => model.Email)
+                </span>
+            </div>
+
+            <div>
+                <span>
+                    @Html.DisplayNameFor(model => model.PhoneNumber)
+                </span>
+
+                <span>
+                    @Html.DisplayFor(model => model.PhoneNumber)
+                </span>
+            </div>
+
+            <div>
+                <span>
+                    Job Title
+                </span>
+
+                <span>
+                    @Html.DisplayFor(model => model.JobTitle.JobTitleName)
+                </span>
+            </div>
+
+            <div>
+                <span>
+                    Company Name
+                </span>
+
+                <span>
+                    @Html.DisplayFor(model => model.CompanyName)
+                </span>
+            </div>
+
+            <div>
+                <span>
+                    Company Field
+                </span>
+
+                <span>
+                    @{ 
+                        var obj = db.JobCategories.Find(Convert.ToInt32(Model.CompanyField));
+                        var name = obj.JobCategoryName;   
+                    }
+                    @name
+                </span>
+            </div>
+
+            <div>
+                <span>
+                    State
+                </span>
+
+                @if (Model.IsActive == true)
+                {
+                    <span>
+                        <b class="text-success">Active</b>
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        <b class="text-danger">Block</b>
+
+                    </span>
+                }
+            </div>
+            <div>
+                <span>
+                    Published Jobs
+                </span>
+
+                <span>
+                    @Html.ActionLink("[" + Model.Jobs.Count() + "]", "GetJobInCompany", "Job", new { id = Model.Id }, new { @class = "text-primary" })
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="img mt-md-5 pt-md-5 pt-0 mt-0">
+            <img src="~/Images/personal_info.png" alt="image" class="d-block pt-md-5 img-fluid" />
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<p>
+    @Html.ActionLink("Back", "Index", "Home", null, new { @class="btn btn-dark"})
+</p>
