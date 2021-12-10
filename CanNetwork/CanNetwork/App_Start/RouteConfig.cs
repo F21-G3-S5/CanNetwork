@@ -8,6 +8,7 @@ using System.Web.Routing;
 namespace CanNetwork
 {
     public class RouteConfig
+// Route config class
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
