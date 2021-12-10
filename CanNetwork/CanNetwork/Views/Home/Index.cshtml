@@ -124,8 +124,8 @@
     <div class="row">
         <div class="col-lg-6 mb-3 mb-lg-0">
             <div class="header-info">
-                <h1 style="font-size: 46px;margin-top: 0px;font-family: 'Comic Sans MS';">
-                    <span style="font-size: 26px">Welcom To</span>
+                <h1 style="font-size: 46px;margin-top: 0px;font-family: 'sans-serif';">
+                    <span style="font-size: 26px">Welcome to</span>
                     <br />
                     CanNetwork
                     <br />
@@ -153,7 +153,7 @@
         @if (Model.Jobs.Where(j => j.PublishedDate.Day == DateTime.Now.Day).Count() == 0)
         {
             <div class="col-12 text-center alert alert-danger">
-                No Jobs Added In Portal Today Yet!
+                No Jobs Added in Portal Today Yet!
             </div>
         }
         else
@@ -176,19 +176,19 @@
 <hr />
 
 <div class="jobsInEachCity">
-    <h2>Jobs In Each City</h2>
+    <h2>Jobs in Each City</h2>
     <br />
     @if (Model.Countries.Count() == 0)
     {
         <div class="col-12 text-center alert alert-danger">
-            No Cities Added In Portal Yet!
+            No Cities Added in Portal Yet!
         </div>
     }
     else
     {
         foreach (var country in Model.Countries)
         {
-            <h3 class="mb-4 pb-2 pr-1 d-inline-flex" style="font-family: 'Comic Sans MS';letter-spacing: 1px;border-bottom: 3px solid #444">
+            <h3 class="mb-4 pb-2 pr-1 d-inline-flex" style="font-family: 'sans-serif';letter-spacing: 1px;border-bottom: 3px solid #444">
                 <i class="fa fa-dot-circle-o"></i> 
                 @country.CountryName
             </h3>
@@ -217,11 +217,11 @@
 <hr />
 
 <div class="companies">
-    <h2>Companies In Portal</h2>
+    <h2>Companies in Portal</h2>
     <div class="row">
         @if (Model.RegisterUsers.Count() == 0) {
             <div class="col-12 text-center alert alert-danger">
-                No Companies In Portal Yet!
+                No Companies in Portal Yet!
             </div>
         }else{
             foreach (var company in Model.RegisterUsers)
