@@ -1,0 +1,52 @@
+﻿@model IEnumerable<CanNetwork.Models.Admin>
+@using CanNetwork.Models
+@using GridMvc.Html
+@{
+    ViewBag.Title = "All Admins";
+}
+
+<h2 class="text-primary mb-3">All Admins [@Model.Count()]</h2>
+
+@if (Session["AdminUser"].ToString() == "Abdelrhman") { 
+    <p>
+        @Html.ActionLink("Add New Admin", "AddNewAdmin", null, new { @class = "btn btn-success" })
+    </p>
+}
+
+@helper CustomRenderingOfColumn(Admin admin)
+{
+    if (Session["AdminUser"].ToString() == "Abdelrhman")
+    {
+        @Html.ActionLink("Delete", "Delete", new { id = admin.Id }, new { @class = "btn btn-danger" })
+    }
+    else
+    {
+        <b>-----</b>
+    }
+}
+
+<div style="width: 100%">
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(o => o.Name)
+    .Titled("Name")
+    .Filterable(true)
+    .Sortable(true);
+
+    columns.Add(o => o.Email)
+    .Titled("E-mail")
+    .Filterable(true)
+    .Sortable(true);
+
+    columns.Add()
+    .Titled("Actions")
+    .Encoded(false)
+    .Sanitized(false)
+    .RenderValueAs(a => CustomRenderingOfColumn(a))
+    .Filterable(false)
+    .Sortable(false);
+
+}).WithPaging(4).Sortable(true)
+</div>
+
+<hr />

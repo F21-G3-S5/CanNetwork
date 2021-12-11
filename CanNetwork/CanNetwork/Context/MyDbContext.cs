@@ -28,7 +28,7 @@ namespace CanNetwork.Context
         public DbSet<ReportedJob> ReportedJobs { get; set; }
         public DbSet<SeekerRegistration> SeekerRegistrations { get; set; }
         public DbSet<University> Universities { get; set; }
-        public MyDbContext()
+        public MyDbContext() : base("name=DefaultConnection")
         {
         }
     }

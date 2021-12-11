@@ -1,0 +1,87 @@
+﻿@model IEnumerable<CanNetwork.Models.LikedCompany>
+@using CanNetwork.Models
+@using CanNetwork.Context
+@using GridMvc.Html
+
+@{
+    MyDbContext db = new MyDbContext();
+    ViewBag.Title = "ShowLikedCompanies";
+}
+
+<h2 class="text-primary mb-3">Liked Companies [@Model.Count()]</h2>
+
+<hr />
+
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-danger">
+        No Liked Companies
+    </div>
+}
+else
+{
+
+    @helper CustomRenderingOfColumnProviderState(LikedCompany likedCompany)
+    {
+        if (likedCompany.RegisterUser.IsActive == true)
+        {
+            <b class="text-success">Active</b>
+        }
+        else
+        {
+            <b class="text-danger">Block</b>
+        }
+    }
+
+    <div style="width: 100%">
+        @Html.Grid(Model).Columns(columns =>
+       {
+           columns.Add(c => c.RegisterUser.Name)
+           .Titled("Provider Name")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(c => c.RegisterUser.CompanyName)
+           .Titled("Company Name")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add()
+            .Titled("Num.of Publish Jobs")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => @<b>[@db.Jobs.Where(aj => aj.RegisterUserId == o.RegisterUserId).Count()]</b>)
+            .Sortable(false)
+            .Filterable(false);
+
+           columns.Add()
+           .Titled("Provider State")
+           .Encoded(false)
+           .Sanitized(false)
+           .RenderValueAs(o => CustomRenderingOfColumnProviderState(o))
+           .Sortable(true)
+           .Filterable(true);
+
+           columns.Add(c => c.LikedCompanyDate)
+           .Titled("Liked Date")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add()
+           .Titled("Actions")
+           .Encoded(false)
+           .Sanitized(false)
+           .RenderValueAs(o => Html.ActionLink("Show Profile", "UserProfile", "RegisterUser", new { id = o.RegisterUserId }, new { @class = "btn btn-primary" }))
+           .Sortable(false)
+           .Filterable(false);
+
+       }).WithPaging(4).Sortable(true)
+    </div>
+
+}
+
+<hr />
+
+<p>
+    @Html.ActionLink("Back", "Index", "Home", null, new { @class = "btn btn-dark" })
+</p>

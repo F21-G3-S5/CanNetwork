@@ -1,0 +1,332 @@
+﻿@model  CanNetwork.Models.AdminViewModel
+
+@using CanNetwork.Context;
+
+@{
+    ViewBag.Title = "Admin Profile";
+}
+
+<style>
+
+    .usersChart,
+    .jobsChart {
+        padding: 20px;
+        background-color: #fbfbfb;
+        border-radius: 3px;
+        box-shadow: 0px 0px 2px 1px #dadada;
+    }
+
+        .usersChart a,
+        .jobsChart a {
+            display: block;
+            position: relative;
+            font-size: 18px;
+            font-weight: 600;
+            color: #666;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+            .usersChart a span,
+            .jobsChart a span {
+                position: absolute;
+                right: 35px;
+            }
+
+
+    .manageFields,
+    .blog-feedbacks {
+        background-color: #fbfbfb;
+        box-shadow: 0px 0px 2px 1px #e5e5e5;
+        padding: 15px 20px;
+    }
+
+        .manageFields .field,
+        .blog-feedbacks .blog,
+        .blog-feedbacks .feedbacks {
+            position: relative;
+            background-color: #f7f7f7;
+            box-shadow: 0px 0px 2px 1px #d6d6d6;
+        }
+
+            .manageFields .field a,
+            .blog-feedbacks .blog a,
+            .blog-feedbacks .feedbacks a {
+                display: block;
+                position: relative;
+                color: #444;
+                padding: 20px;
+                font-size: 20px;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+            }
+
+                .manageFields .field a span,
+                .blog-feedbacks .blog a span,
+                .blog-feedbacks .feedbacks a span {
+                    position: absolute;
+                    right: 20px;
+                }
+</style>
+
+<h2 class="text-primary mb-3 mt-2">Admin Dashboard</h2>
+
+<hr />
+
+@if(ViewBag.allNewUsers != null)
+{
+    <div class="alert alert-info d-flex" style="justify-content: space-between">
+        New Users in [@DateTime.Now.ToString("MMMM")] => [@ViewBag.allNewUsers] Users
+        @Html.ActionLink("Show All", "NewUsersInThisMonth", "RegisterUser", null, new { @class="text-primary"})
+    </div>
+}
+
+<div class="row mb-4">
+    <div class="col-md-6 mb-3 mb-md-0">
+        <div class="usersChart">
+            <a href="/RegisterUser/AllSeekersAndProviders">
+                All Users
+                <span>[@ViewBag.allUsers]</span>
+            </a>
+            <a href="/RegisterUser/ShowAllSeekers">
+                Seekers
+                <span>[@ViewBag.seekerLength]</span>
+            </a>
+            <a href="/RegisterUser/ShowAllUsers">
+                Providers
+                <span>[@ViewBag.userLength]</span>
+            </a>
+            <a href="/RegisterUser/AllActiveUsers">
+                Active Users
+                <span>[@ViewBag.activeUsers]</span>
+            </a>
+            <a href="/RegisterUser/AllBlockUsers">
+                Blocked Users
+                <span>[@ViewBag.blockedUsers]</span>
+            </a>
+            <hr />
+            <canvas id="userChart" width="100" height="100"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="jobsChart">
+            <a href="/Job/Index">
+                All Jobs
+                <span>[@ViewBag.allJobs]</span>
+            </a>
+            <a href="/Job/AllOpenJobs">
+                Open Jobs
+                <span>[@ViewBag.openJobs]</span>
+            </a>
+            <a href="/Job/AllCloseJobs">
+                Closed Jobs
+                <span>[@ViewBag.closeJobs]</span>
+            </a>
+            <a href="/Job/ShowReportedJobs">
+                Reported Jobs
+                <span>[@ViewBag.reportedJobs]</span>
+            </a>
+            <a href="javascript:void(0)" style="visibility: hidden">.</a>
+            <hr />
+            <canvas id="jobsChart" width="100" height="100"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="manageFields">
+    <h2 class="mb-3 d-inline-block" style="color: #444;border-bottom: 2px solid #444;">Manage Fields</h2>
+    <div class="row">
+        <div class="col-sm-6 col-lg-4 mb-3">
+            <div class="field">
+                <a href="/Cities/Index">
+                    Cities
+                    <span>[@ViewBag.cityLength]</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4 mb-3">
+            <div class="field">
+                <a href="/Language/Index">
+                    Language
+                    <span>[@ViewBag.languageLength]</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4 mb-3">
+            <div class="field">
+                <a href="/JobCategory/Index">
+                    Job Category
+                    <span>[@ViewBag.jcLength]</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4 mb-3">
+            <div class="field">
+                <a href="/University/Index">
+                    University
+                    <span>[@ViewBag.universitiesLength]</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4 mb-3">
+            <div class="field">
+                <a href="/EducationLevel/Index">
+                    Education Level
+                    <span>[@ViewBag.elLength]</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4 mb-3">
+            <div class="field">
+                <a href="/Country/Index">
+                    Country
+                    <span>[@ViewBag.countriesLength]</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4 mb-3">
+            <div class="field">
+                <a href="/Nationality/Index">
+                    Nationality
+                    <span>[@ViewBag.nationalitiesLength]</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4 mb-3 mb-sm-0">
+            <div class="field">
+                <a href="/JobType/Index">
+                    Job Type
+                    <span>[@ViewBag.jobTypesLength]</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4 mb-3 mb-sm-0">
+            <div class="field">
+                <a href="/JobTitle/Index">
+                    Job Title
+                    <span>[@ViewBag.jobTitlesLength]</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="blog-feedbacks mt-4">
+    <div class="row">
+        <div class="col-6 col-sm-4 mb-3 mb-sm-0">
+            <h3 class="mb-3 d-inline-block" style="color: #444;border-bottom: 2px solid #444;">Manage Blog</h3>
+            <div class="blog">
+                <a href="/Blogs/Index">
+                    Posts In Blog
+                    <span>[@ViewBag.blogPosts]</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-sm-4 d-none d-sm-block"></div>
+
+        <div class="col-6 col-sm-4 mb-3 mb-sm-0">
+            <h3 class="mb-3 d-inline-block" style="color: #444;border-bottom: 2px solid #444;">Manage Feedbacks</h3>
+            <div class="feedbacks">
+                <a href="/Home/Feedbacks">
+                    Feedbacks
+                    <span>[@ViewBag.feedbacks]</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.1/chart.min.js" integrity="sha512-BqNYFBAzGfZDnIWSAEGZSD/QFKeVxms2dIBPfw11gZubWwKUjEgmFUtUls8vZ6xTRZN/jaXGHD/ZaxD9+fDo0A==" crossorigin="anonymous"></script>
+@section scripts{
+    <script>
+        var ctx = document.getElementById('userChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    'allUsers',
+                    'Seekers',
+                    'Providers',
+                    'Active Users',
+                    'Blocked Users'
+                ],
+                datasets: [{
+                    data: [parseInt(@ViewBag.allUsers),
+                        parseInt(@ViewBag.seekerLength),
+                        parseInt(@ViewBag.userLength),
+                        parseInt(@ViewBag.activeUsers),
+                        parseInt(@ViewBag.blockedUsers),
+                    ],
+                    backgroundColor: [
+                        '#007bff',
+                        '#17a2b8',
+                        '#856404',
+                        '#28a745',
+                        '#dc3545',
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Users Statistics'
+                    }
+                }
+            }
+        });
+
+        var ctx2 = document.getElementById('jobsChart').getContext('2d');
+        var myChart2 = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    'All Jobs',
+                    'Open Jobs',
+                    'Closed Jobs',
+                    'Reported Jobs',
+                ],
+                datasets: [{
+                    data: [parseInt(@ViewBag.allJobs),
+                        parseInt(@ViewBag.openJobs),
+                        parseInt(@ViewBag.closeJobs),
+                        parseInt(@ViewBag.reportedJobs),
+                    ],
+                    backgroundColor: [
+                        '#007bff',
+                        '#28a745',
+                        '#dc3545',
+                        '#222',
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Jobs Statistics'
+                    }
+                }
+            }
+        });
+    </script>
+}

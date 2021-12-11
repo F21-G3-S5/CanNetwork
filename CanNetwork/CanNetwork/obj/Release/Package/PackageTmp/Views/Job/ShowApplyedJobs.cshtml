@@ -1,0 +1,133 @@
+﻿@model IEnumerable<CanNetwork.Models.ApplyedJob>
+@using CanNetwork.Models
+@using CanNetwork.Context
+@using GridMvc.Html
+
+@{
+    MyDbContext db = new MyDbContext();
+    ViewBag.Title = "Applyed Jobs";
+}
+
+<h2 class="text-primary mb-3">Applyed Jobs [@Model.Count()]</h2>
+
+<hr />
+
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-danger">No Applyed Job Yet!</div>
+}
+else
+{
+
+    @helper CustomRenderingOfColumnJobType(ApplyedJob applyedJob)
+    {
+        if (applyedJob.Job.JobState == true)
+        {
+            <b class="text-success">Open</b>
+        }
+        else
+        {
+            <b class="text-danger">Close</b>
+        }
+    }
+    @helper CustomRenderingOfColumn(ApplyedJob applyedJob)
+    {
+        if (Session["SeekerUser"] != null)
+        {
+            @Html.ActionLink("Details", "Details", new { id = applyedJob.JobId }, new { @class = "btn btn-primary" })
+            <button class="btn btn-danger deleteBtn" data-id="@applyedJob.Id">Delete</button>
+        }
+        else
+        {
+            @Html.ActionLink("Details", "Details", new { id = applyedJob.JobId }, new { @class = "btn btn-primary" })
+        }
+    }
+
+    <div style="width: 100%">
+        @Html.Grid(Model).Columns(columns =>
+       {
+           columns.Add(c => c.Job.JobTitle)
+           .Titled("Job Title")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(c => c.Job.JobCategory.JobCategoryName)
+           .Titled("Job Category")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(c => c.Job.JobType.JobTypeName)
+           .Titled("Job Type")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(c => c.ApplyDate)
+           .Titled("Apply Date")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add()
+            .Titled("Num.of Applicants")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => @<b class="d-block text-center">[@db.ApplyedJobs.Where(aj => aj.SeekerRegistrationId == o.SeekerRegistrationId).Count()]</b>)
+            .Sortable(false)
+            .Filterable(false);
+
+           columns.Add()
+            .Titled("Job State")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => CustomRenderingOfColumnJobType(o))
+            .Sortable(true)
+            .Filterable(true);
+
+           columns.Add()
+            .Titled("Actions")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => CustomRenderingOfColumn(o))
+            .Sortable(true)
+            .Filterable(true);
+
+       }).WithPaging(4).Sortable(true)
+    </div>
+}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+@section scripts{
+    <script>
+        $(() => {
+            allDeleteBtns = $(".deleteBtn");
+            [...allDeleteBtns].forEach(btn => {
+                $(btn).click(() => {
+                    id = $(btn).data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Job/DeleteApplyedJob/" + id,
+                        success: res => {
+                            if (res.result == 1) {
+                                swal({
+                                    title: "Delete Applyed Job!",
+                                    text: "You Delete Apply For This Job Successfully!",
+                                    icon: "success",
+                                    button: null,
+                                });
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 4000)
+                            } else {
+                                swal({
+                                    title: "Delete Applyed Job!",
+                                    text: "Deleted Failed!",
+                                    icon: "error",
+                                    button: null,
+                                });
+                            }
+                        }
+                    })
+                });
+            });
+        });
+    </script>
+}

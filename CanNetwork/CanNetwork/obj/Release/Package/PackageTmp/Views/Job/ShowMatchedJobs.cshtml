@@ -1,0 +1,93 @@
+﻿@model IEnumerable<CanNetwork.Models.Job>
+@using CanNetwork.Models
+@using CanNetwork.Context
+@using GridMvc.Html
+
+@{
+    MyDbContext db = new MyDbContext();
+    ViewBag.Title = "ShowMatchedJobs";
+}
+
+<h2 class="text-primary mb-3">Show Matched Jobs [@Model.Count()]</h2>
+
+<hr />
+
+@using (Html.BeginForm("ShowMatchedJobs", "Job", FormMethod.Post, new { @class = "row mb-3" }))
+{
+    @Html.TextBox("searchName", null, new { @class = "col-md-10 col-8 ml-3 mr-2 form-control", placeholder = "Write Job Title.." })
+    <button type="submit" class="btn btn-info col-md-1 col-3">Search</button>
+}
+
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-danger">
+        No Matched Jobs
+    </div>
+}
+else
+{
+
+    @helper CustomRenderingOfColumnJobType(Job job)
+    {
+        if (job.JobState == true)
+        {
+            <b class="text-success">Open</b>
+        }
+        else
+        {
+            <b class="text-danger">Close</b>
+        }
+    }
+
+    <div style="width: 100%">
+        @Html.Grid(Model).Columns(columns =>
+       {
+           columns.Add(c => c.JobTitle)
+           .Titled("Job Title")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(c => c.JobCategory.JobCategoryName)
+           .Titled("Job Category")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(c => c.JobType.JobTypeName)
+           .Titled("Job Type")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add()
+            .Titled("Num.of Applicants")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => @<b class="d-block text-center">[@db.ApplyedJobs.Where(aj => aj.JobId == o.Id).Count()]</b>)
+            .Sortable(false)
+            .Filterable(false);
+
+           columns.Add()
+           .Titled("Job State")
+           .Encoded(false)
+           .Sanitized(false)
+           .RenderValueAs(o => CustomRenderingOfColumnJobType(o))
+           .Sortable(true)
+           .Filterable(true);
+
+           columns.Add()
+           .Titled("Actions")
+           .Encoded(false)
+           .Sanitized(false)
+           .RenderValueAs(o => Html.ActionLink("Details", "Details", new { id = o.Id }, new { @class = "btn btn-primary" }))
+           .Sortable(true)
+           .Filterable(true);
+
+       }).WithPaging(4).Sortable(true)
+    </div>
+
+}
+
+<hr />
+
+<p>
+    @Html.ActionLink("Back", "Index", "Home", null, new { @class = "btn btn-dark" })
+</p>

@@ -1,0 +1,94 @@
+﻿@model IEnumerable<CanNetwork.Models.SeekerRegistration>
+@using CanNetwork.Models
+@using GridMvc.Html
+@using CanNetwork.Context
+
+@{
+    MyDbContext db = new MyDbContext();
+    ViewBag.Title = "Show Matched Seekers";
+}
+
+<h2 class="text-primary mb-3">Matched Seekers [@Model.Count()]</h2>
+
+@using (Html.BeginForm("ShowMatchedSeekers", "RegisterUser", FormMethod.Post, new { @class = "row" }))
+{
+    @Html.TextBox("searchName", null, new { @class = "col-md-10 col-8 ml-3 mr-2 form-control", placeholder = "Write Seeker Name.." })
+    <button type="submit" class="btn btn-info col-md-1 col-3">Search</button>
+}
+
+<hr />
+
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-danger">No Matched Seekers</div>
+}
+else
+{
+
+    @helper CustomRenderingOfColumn2(SeekerRegistration seeker)
+    {
+        if (seeker.IsActive == true)
+        {
+            <b class="text-success">Active</b>
+        }
+        else
+        {
+            <b class="text-danger">Block</b>
+        }
+    }
+
+<div style="width: 100%">
+    @Html.Grid(Model).Columns(columns =>
+    {
+       columns.Add(o => o.Name)
+       .Titled("Seeker Name")
+       .Filterable(true)
+       .Sortable(true);
+
+       columns.Add(o => o.CurrentJobTitle)
+       .Titled("Current Job Title")
+       .Filterable(true)
+       .Sortable(true);
+
+
+       columns.Add()
+       .Titled("Seeker State")
+       .Encoded(false)
+       .Sanitized(false)
+       .RenderValueAs(o => CustomRenderingOfColumn2(o))
+       .Sortable(true)
+       .Css("text-center");
+
+       columns.Add()
+       .Titled("Num.of Applied Jobs")
+       .Encoded(false)
+       .Sanitized(false)
+       .RenderValueAs(o => @<a href="~/Job/ShowApplyedJobs/@o.Id">[@db.ApplyedJobs.Where(aj => aj.SeekerRegistrationId == o.Id).Count()]</a>)
+.Sortable(true)
+.Css("text-center");
+
+columns.Add()
+.Titled("Num.of Matched Jobs")
+.Encoded(false)
+.Sanitized(false)
+.RenderValueAs(o => @<a href="~/Job/ShowMatchedJobs/@o.Id">[@db.Jobs.Where(j => j.JobCategory.JobCategoryName == o.SearchOnJobTitle).Count()]</a>)
+.Sortable(true)
+.Css("text-center");
+
+columns.Add()
+.Titled("Actions")
+.Encoded(false)
+.Sanitized(false)
+.RenderValueAs(o => @Html.ActionLink("Show Profile", "SeekerDetails", new { id = o.Id }, new { @class = "btn btn-primary" }))
+.Sortable(false)
+.Css("text-center");
+}).WithPaging(4).Sortable(true)
+</div>
+
+}
+
+<hr />
+
+<p>
+    @Html.ActionLink("Back To Home", "Index", "Home", null, new { @class = "btn btn-dark" })
+</p>

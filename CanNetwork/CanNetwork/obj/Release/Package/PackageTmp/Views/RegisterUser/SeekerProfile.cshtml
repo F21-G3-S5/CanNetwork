@@ -1,0 +1,409 @@
+﻿@model CanNetwork.Models.SeekerRegistration
+
+@{
+    ViewBag.Title = "Seeker Profile";
+}
+
+<style>
+    button.close{
+        color: #fff;
+    }
+    .modal-dialog {
+        max-width: initial !important;
+        height: 100% !important;
+    }
+    .modal-content {
+        width: 90% !important;
+        height: 90% !important;
+        margin: auto;
+        background-color: #0e2b44;
+        color: #fff;
+        box-shadow: 0px 0px 7px 2px #0e2b44;
+    }
+    .info {
+        position: relative;
+    }
+
+    .editMenu {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+    }
+
+    .info img {
+        width: 180px;
+        height: 220px;
+    }
+
+    .info .likedBtn {
+        position: absolute;
+        right: 0;
+        cursor: pointer;
+    }
+
+    div.info div.attr {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        div.info div span:first-of-type {
+            width: 33%;
+            font-size: 17px;
+            font-weight: 500;
+        }
+
+            div.info div span:first-of-type::after {
+                content: " :";
+            }
+</style>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="info pt-4">
+            <h2 class="text-primary mb-3">@Model.Name Profile</h2>
+            @if (Session["SeekerUser"] != null)
+            {
+                <p class="editMenu">
+                    <a class="btn btn-dark" href="~/RegisterUser/EditSeekerProfile/@Session["SeekerId"]">Edit Profile</a>
+                    <a class="btn btn-primary d-block p-2 m-1" href="~/RegisterUser/ChangePassword/@Session["SeekerUser"].ToString()">Change Password</a>
+                </p>
+            }
+            <hr />
+
+            <div class="section">
+                <h4 class="text-dark mb-3 d-inline-block" style="border-bottom: 2px solid #444;">Personal Info</h4>
+
+                <div class="attr">
+                    <img src="~/Upload/SeekersImage/@Model.SeekerImage" alt="Seeker image" class="img-fluid img-thumbnail" />
+                </div>
+
+                <div class="attr">
+                    <span>
+                        Name
+                    </span>
+
+                    <span>
+                        @Html.DisplayFor(model => model.Name)
+                    </span>
+                </div>
+
+                <div class="attr">
+                    <span>
+                        @Html.DisplayNameFor(model => model.Email)
+                    </span>
+
+                    <span>
+                        @Html.DisplayFor(model => model.Email)
+                    </span>
+                </div>
+
+                <div class="attr">
+                    <span>
+                        @Html.DisplayNameFor(model => model.BirthDate)
+                    </span>
+
+                    <span>
+                        @Html.DisplayFor(model => model.BirthDate)
+                    </span>
+                </div>
+
+                <div class="attr">
+                    <span>
+                        @Html.DisplayNameFor(model => model.Gender)
+                    </span>
+
+                    <span>
+                        @Html.DisplayFor(model => model.Gender)
+                    </span>
+                </div>
+
+                <div class="attr">
+                    <span>
+                        Address
+                    </span>
+
+                    <span>
+                        @Html.DisplayFor(model => model.City.CityName) - @Html.DisplayFor(model => model.Country.CountryName)
+                    </span>
+                </div>
+
+                <div class="attr">
+                    <span>
+                        Nationality
+                    </span>
+
+                    <span>
+                        @Html.DisplayFor(model => model.Nationality.NationalityName)
+                    </span>
+                </div>
+
+                <div class="attr">
+                    <span>
+                        State
+                    </span>
+
+                    @if (Model.IsActive == true)
+                    {
+                        <span>
+                            <b class="text-success">Active</b>
+                        </span>
+                    }
+                    else
+                    {
+                        <span>
+                            <b class="text-danger">Block</b>
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="section">
+                <h4 class="text-dark mb-3 d-inline-block" style="border-bottom: 2px solid #444;">Education Info</h4>
+
+                <div class="attr">
+                    <span>
+                        Graduation Date
+                    </span>
+
+                    <span>
+                        @Html.DisplayFor(model => model.GraduationDate)
+                    </span>
+                </div>
+
+                <div class="attr">
+                    <span>
+                        University
+                    </span>
+
+                    <span>
+                        @Html.DisplayFor(model => model.University.UniversityName)
+                    </span>
+                </div>
+
+                <div class="attr">
+                    <span>
+                        Education Level
+                    </span>
+
+                    <span>
+                        @Html.DisplayFor(model => model.EducationLevel.EducationLevelName)
+                    </span>
+                </div>
+
+                <div class="attr">
+                    <span>
+                        Main Language
+                    </span>
+
+                    <span>
+                        @Html.DisplayFor(model => model.Language.LanguageName)
+                    </span>
+                </div>
+
+                <div class="attr">
+                    <span>
+                        CV
+                    </span>
+
+                    <span>
+                        <button type="button" id="cvBtn" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-cv="Upload/SeekersCv/@Model.SeekerCV">Review CV</button>
+                    </span>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="section">
+                <h4 class="text-dark mb-3 d-inline-block" style="border-bottom: 2px solid #444;">Previous Work Info</h4>
+                @if (Model.CompanyName.ToString() == "none" || Model.Salary == 0)
+                {
+                    <div class="alert alert-danger">Does not have a job previously</div>
+                }
+                else
+                {
+
+                    <div class="attr">
+                        <span>
+                            Job Title
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.JobTitle.JobTitleName)
+                        </span>
+                    </div>
+
+                    <div class="attr">
+                        <span>
+                            Company Name
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.CompanyName)
+                        </span>
+                    </div>
+
+                    <div class="attr">
+                        <span>
+                            Company Field
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.JobCategory.JobCategoryName)
+                        </span>
+                    </div>
+
+                    <div class="attr">
+                        <span>
+                            Job Type
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.JobType.JobTypeName)
+                        </span>
+                    </div>
+
+                    <div class="attr">
+                        <span>
+                            Salary
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.Salary)$
+                        </span>
+                    </div>
+
+                    <div class="attr">
+                        <span>
+                            Duration
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.Duration) Year
+                        </span>
+                    </div>
+                }
+            </div>
+
+            <hr />
+
+            <h4 class="text-dark mb-3 d-inline-block" style="border-bottom: 2px solid #444;">Current Work Info</h4>
+
+            @if (Model.CurrentCompanyName.ToString() == "none" || Model.CurrentSalary == 0)
+            {
+                <div class="alert alert-danger">Does not have a job currently</div>
+            }
+            else
+            {
+                <div class="section">
+
+                    <div class="attr">
+                        <span>
+                            Job Title
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.CurrentJobTitle)
+                        </span>
+                    </div>
+
+                    <div class="attr">
+                        <span>
+                            Company Name
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.CurrentCompanyName)
+                        </span>
+                    </div>
+
+                    <div class="attr">
+                        <span>
+                            Company Field
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.CurrentJobCategory)
+                        </span>
+                    </div>
+
+                    <div class="attr">
+                        <span>
+                            Job Type
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.CurrentJobType)
+                        </span>
+                    </div>
+
+                    <div class="attr">
+                        <span>
+                            Salary
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.CurrentSalary)$
+                        </span>
+                    </div>
+
+                    <div class="attr">
+                        <span>
+                            Duration
+                        </span>
+
+                        <span>
+                            @Html.DisplayFor(model => model.CurrentDuration) Year
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="img mt-md-5 pt-md-5 pt-0 mt-0">
+            <img src="~/Images/personal_info.png" alt="image" class="d-block pt-md-5 img-fluid" />
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<p>
+    @Html.ActionLink("Back", "Index", "Home", null, new { @class = "btn btn-dark" })
+</p>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@Model.Name CV</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="CvIframe" style="width: 100%;height:100%"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(() => {
+            $("#cvBtn").click(() => {
+                target = $("#cvBtn").data("cv");
+                cvIframe = $(".modal-body #CvIframe");
+                cvIframe.attr("src", "../../../../"+target);
+                cvIframe.fadeIn(1000);
+            });
+        });
+    </script>
+} 

@@ -1,0 +1,53 @@
+﻿@model IEnumerable<CanNetwork.Models.SeekerRegistration>
+@using GridMvc.Html
+@using CanNetwork.Context
+@{
+    MyDbContext db = new MyDbContext();
+}
+@{
+    ViewBag.Title = "All Blocked Seekers";
+}
+
+<h2 class="text-primary mb-3">All Blocked Seekers</h2>
+
+<div style="width: 100%">
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(c => c.Name).Titled("Name").Filterable(true);
+        columns.Add(c => c.SearchOnJobTitle).Titled("Job Title").Filterable(true);
+
+        columns.Add()
+        .Titled("Num. of Apply Jobs")
+        .Encoded(false)
+        .Sanitized(false)
+        .SetWidth(30)
+        .RenderValueAs(o => @<a href="~/Job/ShowApplyedJobs/@o.Id">[@db.ApplyedJobs.Where(a => a.SeekerRegistrationId == o.Id).Count()] Jobs</a>)
+        .Filterable(false);
+
+        columns.Add()
+        .Titled("Num. of Matched Jobs")
+        .Encoded(false)
+        .Sanitized(false)
+        .SetWidth(30)
+        .RenderValueAs(o => @<a href="~/Job/ShowMatchedJobs/@o.Id">[@db.Jobs.Where(j => j.JobTitle == o.SearchOnJobTitle).Count()] Jobs</a>)
+        .Filterable(false);
+
+        columns.Add()
+            .Titled("User State")
+        .Encoded(false)
+        .Sanitized(false)
+        .SetWidth(30)
+        .RenderValueAs(o => @<b class="text-danger">Block</b>)
+        .Filterable(false);
+
+        columns.Add()
+        .Encoded(false)
+        .Sanitized(false)
+        .SetWidth(30)
+        .RenderValueAs(o => @Html.ActionLink("Details", "SeekerDetails", new { id = o.Id }, new { @class = "btn btn-primary" }))
+        .Filterable(false);
+
+    }).WithPaging(2).Sortable(true)
+</div>
+
+<hr />

@@ -1,0 +1,58 @@
+﻿@model CanNetwork.Models.SeekerRegistration
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2 class="text-primary mt-2 mb-3">
+    <i class="fa fa-sign-in" style="position: relative;top: 3px;"></i>
+    Login
+</h2>
+
+
+@if(ViewBag.ErrorMsg != null){
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMsg
+    </div>
+}
+<div class="row">
+    <div class="col-md-6">
+        @using (Html.BeginForm("LoginForAll", "RegisterUser", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <hr />
+
+            <div class="form-horizontal pt-2">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    <label class="control-label col-md-2">Name</label>
+                    <div class="col-md-10">
+                        <input type="text" name="name" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Password</label>
+                    <div class="col-md-10">
+                        <input type="password" name="password" class="form-control" />
+                    </div>
+                </div>
+
+                @Html.ActionLink("Forget Password?", "ResetPassword", "RegisterUser", null, new { @class= "d-block pl-3 mb-3 text-primary" })
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Login" class="btn btn-success" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-md-6">
+        <img src="~/Images/Login.png" alt="login image" class="img-fluid"/>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

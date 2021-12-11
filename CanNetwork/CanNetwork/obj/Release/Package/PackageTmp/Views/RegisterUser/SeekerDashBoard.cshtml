@@ -1,0 +1,281 @@
+﻿@model CanNetwork.Models.SeekerViewModel
+@using CanNetwork.Models
+@using CanNetwork.Context
+@using GridMvc.Html
+
+@{
+    MyDbContext db = new MyDbContext();
+    ViewBag.Title = "DashBoard | Seeker";
+}
+
+<h2 class="text-primary mb-3">@Session["SeekerUser"] DashBoard</h2>
+
+<hr />
+<br />
+
+<h4 class="text-primary mb-3 d-flex" style="justify-content: space-between">
+    <span class="d-inline-block" style="border-bottom: 2px solid #0094ff">
+        <i class="fa fa-dot-circle-o"></i>
+        Applyed Jobs
+    </span>
+    @Html.ActionLink("Show All", "ShowApplyedJobs", "Job", null, new { @class = "btn btn-dark" })
+</h4>
+
+@if (Model.ApplyedJobs.Count() == 0)
+{
+    <div class="alert alert-danger">No Applyed Jobs Yet!</div>
+}
+else
+{
+
+    @helper CustomRenderingOfColumnJobType(ApplyedJob applyedJob)
+    {
+        if (applyedJob.Job.JobState == true)
+        {
+            <b class="text-success">Open</b>
+        }
+        else
+        {
+            <b class="text-danger">Close</b>
+        }
+    }
+
+    <div style="width: 100%">
+        @Html.Grid(Model.ApplyedJobs.ToList()).Columns(columns =>
+       {
+           columns.Add(c => c.Job.JobTitle)
+           .Titled("Job Title")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(c => c.Job.JobCategory.JobCategoryName)
+           .Titled("Job Category")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add(c => c.Job.JobType.JobTypeName)
+           .Titled("Job Type")
+           .Filterable(true)
+           .Sortable(true);
+
+           columns.Add()
+            .Titled("Job State")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => CustomRenderingOfColumnJobType(o))
+            .Sortable(true)
+            .Filterable(true);
+
+           columns.Add(c => c.ApplyDate)
+           .Titled("Apply Date")
+           .Filterable(true)
+           .Sortable(true);
+
+       }).WithPaging(4).Sortable(true)
+    </div>
+}
+
+<br />
+<hr />
+<br />
+
+<h4 class="text-primary mb-3 d-flex" style="justify-content: space-between">
+    <span class="d-inline-block" style="border-bottom: 2px solid #0094ff">
+        <i class="fa fa-dot-circle-o"></i>
+        Matched Jobs
+    </span>
+    @Html.ActionLink("Show All", "ShowMatchedJobs", "Job", null, new { @class = "btn btn-dark" })
+</h4>
+
+@if (Model.Jobs.Count() == 0)
+{
+    <div class="alert alert-danger">No Matched Jobs Yet!</div>
+}
+else
+{
+
+    @helper CustomRenderingOfColumnJobType(Job job)
+    {
+        if (job.JobState == true)
+        {
+            <b class="text-success">Open</b>
+        }
+        else
+        {
+            <b class="text-danger">Close</b>
+        }
+    }
+
+<div style="width: 100%">
+    @Html.Grid(Model.Jobs.ToList()).Columns(columns =>
+   {
+       columns.Add(c => c.JobTitle)
+       .Titled("Job Title")
+       .Filterable(true)
+       .Sortable(true);
+
+       columns.Add(c => c.JobCategory.JobCategoryName)
+       .Titled("Job Category")
+       .Filterable(true)
+       .Sortable(true);
+
+       columns.Add(c => c.JobType.JobTypeName)
+       .Titled("Job Type")
+       .Filterable(true)
+       .Sortable(true);
+
+        columns.Add()
+        .Titled("Num.of Applicants")
+        .Encoded(false)
+        .Sanitized(false)
+        .RenderValueAs(o => @<b class="d-block text-center">[@db.ApplyedJobs.Where(aj => aj.JobId == o.Id).Count()]</b>)
+        .Sortable(false)
+        .Filterable(false);
+
+        columns.Add()
+        .Titled("Job State")
+        .Encoded(false)
+        .Sanitized(false)
+        .RenderValueAs(o => CustomRenderingOfColumnJobType(o))
+        .Sortable(true)
+        .Filterable(true);
+
+    }).WithPaging(4).Sortable(true)
+</div>
+
+}
+
+<br />
+<hr />
+<br />
+
+<h4 class="text-primary mb-3 d-flex" style="justify-content: space-between">
+    <span class="d-inline-block" style="border-bottom: 2px solid #0094ff">
+        <i class="fa fa-dot-circle-o"></i>    
+        Liked Jobs
+    </span>
+    @Html.ActionLink("Show All", "ShowLikedJobs", "Job", null, new { @class = "btn btn-dark" })
+</h4>
+
+@if (Model.LikedJobs.Count() == 0)
+{
+    <div class="alert alert-danger">No Liked Jobs Yet!</div>
+}
+else
+{
+
+    @helper CustomRenderingOfColumnJobType(LikedJobs likedJobs)
+    {
+        if (likedJobs.Job.JobState == true)
+        {
+            <b class="text-success">Open</b>
+        }
+        else
+        {
+            <b class="text-danger">Close</b>
+        }
+    }
+
+<div style="width: 100%">
+    @Html.Grid(Model.LikedJobs.ToList()).Columns(columns =>
+   {
+       columns.Add(c => c.Job.JobTitle)
+       .Titled("Job Title")
+       .Filterable(true)
+       .Sortable(true);
+
+       columns.Add(c => c.Job.JobCategory.JobCategoryName)
+       .Titled("Job Category")
+       .Filterable(true)
+       .Sortable(true);
+
+       columns.Add(c => c.Job.JobType.JobTypeName)
+       .Titled("Job Type")
+       .Filterable(true)
+       .Sortable(true);
+
+       columns.Add()
+        .Titled("Num.of Applicants")
+        .Encoded(false)
+        .Sanitized(false)
+        .RenderValueAs(o => @<b class="d-block text-center">[@db.ApplyedJobs.Where(aj => aj.JobId == o.JobId).Count()]</b>)
+        .Sortable(false)
+        .Filterable(false);
+
+        columns.Add()
+        .Titled("Job State")
+        .Encoded(false)
+        .Sanitized(false)
+        .RenderValueAs(o => CustomRenderingOfColumnJobType(o))
+        .Sortable(true)
+        .Filterable(true);
+
+    }).WithPaging(4).Sortable(true)
+    </div>
+}
+
+<br />
+<hr />
+<br />
+
+<h4 class="text-primary mb-3 d-flex" style="justify-content: space-between">
+    <span class="d-inline-block" style="border-bottom: 2px solid #0094ff">
+        <i class="fa fa-dot-circle-o"></i>
+        Liked Companies
+    </span>
+        @Html.ActionLink("Show All", "ShowLikedCompanies", "RegisterUser", null, new { @class = "btn btn-dark" })
+</h4>
+
+@if (Model.LikedCompanies.Count() == 0)
+{
+    <div class="alert alert-danger">No Liked Companies Yet!</div>
+}
+else
+{
+
+    @helper CustomRenderingOfColumnProviderState(LikedCompany likedCompany)
+    {
+        if (likedCompany.RegisterUser.IsActive == true)
+        {
+            <b class="text-success">Active</b>
+        }
+        else
+        {
+            <b class="text-danger">Block</b>
+        }
+    }
+
+    <div style="width: 100%">
+        @Html.Grid(Model.LikedCompanies.ToList()).Columns(columns =>
+   {
+       columns.Add(c => c.RegisterUser.Name)
+       .Titled("Provider Name")
+       .Filterable(true)
+       .Sortable(true);
+
+       columns.Add(c => c.RegisterUser.JobTitle.JobTitleName)
+       .Titled("Job Title")
+       .Filterable(true)
+       .Sortable(true);
+
+       columns.Add(c => c.RegisterUser.CompanyName)
+       .Titled("Company Name")
+       .Filterable(true)
+       .Sortable(true);
+
+       columns.Add()
+        .Titled("Provider State")
+        .Encoded(false)
+        .Sanitized(false)
+        .RenderValueAs(o => CustomRenderingOfColumnProviderState(o))
+        .Sortable(true)
+        .Filterable(true);
+
+       columns.Add(c => c.LikedCompanyDate)
+       .Titled("Liked Date")
+       .Filterable(true)
+       .Sortable(true);
+   }).WithPaging(4).Sortable(true)
+    </div>
+
+}

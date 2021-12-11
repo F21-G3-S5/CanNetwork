@@ -1,0 +1,461 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>@ViewBag.Title</title>
+    <link rel="icon" href="~/Images/job.png" />
+
+    <link rel="stylesheet" href="~/Content/Gridmvc.css" />
+    <link rel="stylesheet" href="~/Content/animate.css" />
+    <link rel="stylesheet" href="~/Content/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/Site.css" />
+
+    <style>
+        .logoutBtn {
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            margin-top: 5px !important;
+            margin-left: 5px !important;
+        }
+
+        i.fa.fa-bars {
+            color: #fff;
+            padding: 12px 8px 5px 0px;
+            font-size: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+            i.fa.fa-bars:hover {
+                color: #c9def5;
+            }
+
+        .sidebar {
+            position: fixed;
+            top: 85px;
+            right: -360px;
+            width: 360px;
+            height: calc(100vh - 85px);
+            background-color: #001d38;
+            border-left: 4px solid #00d363;
+            border-top: 2px solid #00d363;
+            z-index: 1031;
+            transition: all 0.5s ease-in-out;
+        }
+
+            .sidebar ul {
+                padding: 0px;
+                list-style: none;
+            }
+
+                .sidebar ul li a {
+                    display: block;
+                    padding-top: 5px;
+                    text-decoration: none;
+                    color: #c9def5;
+                    transition: all 0.3s ease-in-out;
+                }
+
+                    .sidebar ul li a:hover {
+                        padding-left: 5px;
+                        color: #00d363;
+                    }
+
+        .showSidebar {
+            right: 0px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+
+        <div class="container">
+            <a class="navbar-brand" href="~/Home">
+                <img src="~/Images/logo_new.png" alt="logo">
+            </a>
+
+            <button id="toggelerBtn" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" (click)="isOpen = !isOpen">
+                <span class="nav-toggler"></span>
+                <span class="nav-toggler"></span>
+                <span class="nav-toggler"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav m-auto">
+                    <li class="nav-item active">
+                        <a href="~/Home" class="nav-link">Home</a>
+                    </li>
+                    @if (Session["SeekerUser"] != null)
+                    {
+                <li class="nav-item active">
+                    <a href="~/RegisterUser/SeekerDashBoard/@Session["SeekerId"]" class="nav-link">DashBoard</a>
+                </li> }
+                            else if (Session["UserName"] != null)
+                            {
+                <li class="nav-item active">
+                    <a href="~/RegisterUser/Dashboard/@Session["UserId"]" class="nav-link">DashBoard</a>
+                </li> }
+                            else if (Session["AdminUser"] != null)
+                            {
+                <li class="nav-item active">
+                    <a href="~/AdminViewModel/Index" class="nav-link">DashBoard</a>
+                </li>}
+                    <li class="nav-item">
+                        <a href="~/Job" class="nav-link">Browse Jobs</a>
+                    </li>
+                    <!--
+                    <li class="nav-item">
+                        <a href="~/Blogs" class="nav-link">Blog</a>
+                    </li>
+                    -->
+                    @if (Session["AdminUser"] == null)
+                    {
+                <li class="nav-item">
+                    <a href="~/Home/Contact" class="nav-link">Contact</a>
+                </li> }
+                            else
+                            {
+                <li class="nav-item">
+                    <a href="~/Home/Feedbacks" class="nav-link">Feedbacks</a>
+                </li>}
+                </ul>
+
+                <ul class="navbar-nav mr-0">
+                    @if (Session["UserName"] != null)
+                    {
+                        <li class="dropdown nav-item">
+                            <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                                <i class="fa fa-user"></i>
+                                @Session["UserName"]
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item">
+                                    @Html.ActionLink("Dashboard", "DashBoard", "RegisterUser", new { id = @Session["UserId"] }, new { @class = "btn btn-dark d-block p-2 m-1" })
+                                </li>
+                                <li class="dropdown-item">
+                                    @Html.ActionLink("Profile", "UserProfile", "RegisterUser", new { id = @Session["UserId"] }, new { @class = "btn btn-dark d-block p-2 m-1" })
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="~/Job/ShowPublishedJobs" class="btn btn-dark d-block p-2 m-1">Published Jobs</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="~/Job/ShowApplyersForEachJob" class="btn btn-dark d-block p-2 m-1">Applicants For Jobs</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="~/RegisterUser/ShowMatchedSeekers" class="btn btn-dark d-block p-2 m-1">Matched Seekers</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">@Html.ActionLink("LogOut", "LogOut", "RegisterUser", null, new { @class = "nav-link btn btn-danger logoutBtn" })</li>
+                    }
+                    else if (Session["SeekerUser"] != null)
+                    {
+                        <li class="dropdown nav-item">
+                            <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                                <i class="fa fa-user"></i>
+                                @Session["SeekerUser"]
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item">
+                                    <a href="~/RegisterUser/SeekerDashboard/@Session["SeekerId"]" class="btn btn-dark d-block p-2 m-1">Dashboard</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="~/RegisterUser/SeekerProfile/@Session["SeekerId"]" class="btn btn-dark d-block p-2 m-1">Profile</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="~/Job/ShowApplyedJobs" class="btn btn-dark d-block p-2 m-1">Applyed Jobs</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="~/Job/ShowLikedJobs" class="btn btn-dark d-block p-2 m-1">Interested Jobs</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="~/Job/ShowMatchedJobs" class="btn btn-dark d-block p-2 m-1">Matched Jobs</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="~/RegisterUser/ShowLikedCompanies" class="btn btn-dark d-block p-2 m-1">Liked Companies</a>
+                                </li>
+                                
+                                
+                            </ul>
+                        </li>
+                        <li class="nav-item">@Html.ActionLink("LogOut", "LogOut", "RegisterUser", null, new { @class = "nav-link btn btn-danger logoutBtn" })</li>
+                    }
+                    else if (Session["AdminUser"] != null)
+                    {
+                        <li>
+                            <a href="~/AdminViewModel/Index" class="nav-link">
+                                @Session["AdminUser"]
+                            </a>
+                        </li>
+                        <li>
+                            <i id="sidebarToggeler" class="fa fa-bars"></i>
+                        </li>
+                        <li class="nav-item">@Html.ActionLink("LogOut", "LogOut", "RegisterUser", null, new { @class = "nav-link btn btn-danger logoutBtn" })</li>
+                    }
+                    else
+                    {
+                        <li class="dropdown nav-item">
+                            <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">Register</a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item">
+                                    <a href="~/RegisterUser/Register" class="btn btn-info d-block p-2 m-1">Register As Provider</a>
+                                </li>
+                                <li class="dropdown-divider"></li>
+                                <li class="dropdown-item">
+                                    <a href="~/RegisterUser/SeekerRegister" class="btn btn-primary d-block p-2 m-1">Register As Seeker</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">@Html.ActionLink("Login", "LoginForAll", "RegisterUser", null, new { @class = "nav-link" })</li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+    </nav>
+
+    <!-- Admin Sidebar Menu -->
+    @if (Session["AdminUser"] != null)
+    {
+        <section id="sidebarMenu" class="p-2 pl-3 pr-3 pt-4 sidebar">
+            <h4 class="d-inline-block text-light" style="letter-spacing: 0.5px; border-bottom: 2px solid #fff">Manage Users</h4>
+            <ul>
+                <li>
+                    <a href="~/AdminViewModel/ShowAllAdmins">
+                        <i class="fa fa-link pr-1"></i>
+                        Manage Admins
+                    </a>
+                </li>
+                <li>
+                    <a href="~/RegisterUser/ShowAllSeekers">
+                        <i class="fa fa-link pr-1"></i>
+                        Manage Seekers
+                    </a>
+                </li>
+                <li>
+                    <a href="~/RegisterUser/ShowAllUsers">
+                        <i class="fa fa-link pr-1"></i>
+                        Manage Providers
+                    </a>
+                </li>
+            </ul>
+
+            <h4 class="d-inline-block text-light" style="letter-spacing: 0.5px; border-bottom: 2px solid #fff">Manage Jobs</h4>
+            <ul>
+                <li>
+                    <a href="~/Job/Index">
+                        <i class="fa fa-link pr-1"></i>
+                        All Jobs
+                    </a>
+                </li>
+                <li>
+                    <a href="~/Job/AllOpenJobs">
+                        <i class="fa fa-link pr-1"></i>
+                        Open Jobs
+                    </a>
+                </li>
+                <li>
+                    <a href="~/Job/AllCloseJobs">
+                        <i class="fa fa-link pr-1"></i>
+                        Close Jobs
+                    </a>
+                </li>
+                <li>
+                    <a href="~/Job/ShowReportedJobs">
+                        <i class="fa fa-link pr-1"></i>
+                        Reported Jobs
+                    </a>
+                </li>
+            </ul>
+
+            <h4 class="d-inline-block text-light" style="letter-spacing: 0.5px; border-bottom: 2px solid #fff">Manage Fields</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul>
+                        <li>
+                            <a href="~/Cities/Index">
+                                <i class="fa fa-link pr-1"></i>
+                                City
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/Country/Index">
+                                <i class="fa fa-link pr-1"></i>
+                                Country
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/JobCategory/Index">
+                                <i class="fa fa-link pr-1"></i>
+                                Job Category
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/JobType/Index">
+                                <i class="fa fa-link pr-1"></i>
+                                Job Type
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/JobTitle/Index">
+                                <i class="fa fa-link pr-1"></i>
+                                Job Title
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul>
+                        <li>
+                            <a href="~/EducationLevel/Index">
+                                <i class="fa fa-link pr-1"></i>
+                                Education Level
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/University/index">
+                                <i class="fa fa-link pr-1"></i>
+                                University
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/Language/Index">
+                                <i class="fa fa-link pr-1"></i>
+                                Language
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/Nationality/Index">
+                                <i class="fa fa-link pr-1"></i>
+                                Nationality
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!--
+            <h4 class="d-inline-block text-light" style="letter-spacing: 0.5px; border-bottom: 2px solid #fff">Manage Blog</h4>
+            <ul>
+                <li>
+                    <a href="~/Blogs">
+                        <i class="fa fa-link pr-1"></i>
+                        Blog
+                    </a>
+                </li>
+            </ul>
+
+            <h4 class="d-inline-block text-light" style="letter-spacing: 0.5px; border-bottom: 2px solid #fff">Manage FeedBacks</h4>
+            <ul>
+                <li>
+                    <a href="~/Home/Feedbacks">
+                        <i class="fa fa-link pr-1"></i>
+                        FeedBacks
+                    </a>
+                </li>
+            </ul>
+                -->
+        </section>
+    }
+
+    <div class="content">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </div>
+
+    <!--Footer-->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 m-md-0">
+                    <div class="footer-info">
+                        <img src="~/Images/logo_new.png" alt="footer logo">
+                        <p>An interactive social platform, where different event organizers and employers are brought together to help socialize to interact with different communities and expand their network.</p>
+                        <ul class="social-links">
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <i class="fa fa-facebook-f"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <i class="fa fa-google"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <i class="fa fa-instagram"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 m-md-0 mt-sm-4">
+                    <div class="footer-links">
+                        <h3>Site Links</h3>
+                        <div class="row">
+                            <ul class="col-md-4">
+                                <li>
+                                    <a href="javascript:void(0)">
+                                        <i class="fa fa-link"></i>
+                                        Home
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)">
+                                        <i class="fa fa-link"></i>
+                                        About
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)">
+                                        <i class="fa fa-link"></i>
+                                        Browse Jobs
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="col-md-8">
+                                <li>
+                                    <a href="javascript:void(0)">
+                                        <i class="fa fa-link"></i>
+                                        Blog
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)">
+                                        <i class="fa fa-link"></i>
+                                        Contact
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="copyright text-center">
+            <!--
+            <p>Copyright <span>©2021</span> All rights reserved by CanNetwork</span></p>
+            -->
+        </div>
+    </footer>
+
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/popper.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/JavaScript.js"></script>
+    <script src="~/Scripts/gridmvc.min.js"></script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

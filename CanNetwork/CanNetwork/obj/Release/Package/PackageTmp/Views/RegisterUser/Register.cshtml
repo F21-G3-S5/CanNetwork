@@ -1,0 +1,198 @@
+﻿@model CanNetwork.Models.RegisterUser
+
+@{
+    ViewBag.Title = "Register";
+}
+
+<h2 class="text-primary">Provider Register</h2>
+
+@using (Html.BeginForm("Register", "RegisterUser", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    @if (@ViewBag.Notification != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.Notification
+        </div>
+    }
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div id="err-div" class="alert alert-danger" style="display: none;">
+        <span id="err-msg"></span>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2">Personal Photo</label>
+        <div class="col-md-10">
+            <input type="file" name="providerImage" id="imageInput" class="form-control" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", id = "name" } })
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div id="errorMsgName" class="alert alert-danger" style="display: none;">
+        Please Fill Name Input is Required And Try Again
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", id = "email" } })
+            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div id="errorMsgEmail" class="alert alert-danger" style="display: none;">
+        Please Fill E-mail Input is Required And Try Again
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", id = "password" } })
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div id="errorMsgPassword" class="alert alert-danger" style="display: none;">
+        Please Fill Password Input is Required And min length = 8 digit then Try Again
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control", id = "confirmPassword" } })
+            @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div id="errorMsgConfirmPassword" class="alert alert-danger" style="display: none;">
+        Confirm Password not match with Password Try Again
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control", id = "phoneNumber" } })
+            @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.CompanyName, htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.CompanyName, new { htmlAttributes = new { @class = "form-control", id = "companyName" } })
+            @Html.ValidationMessageFor(model => model.CompanyName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.CompanyField, htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-10">
+            @Html.DropDownList("CompanyField", null, new { @class = "form-control", id = "jobTitle" })
+            @Html.ValidationMessageFor(model => model.CompanyField, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.JobTitleId, "Job Title", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-10">
+            @Html.DropDownList("JobTitleId", null, new { @class = "form-control", id = "jobTitle" })
+            @Html.ValidationMessageFor(model => model.JobTitleId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.SecurityQuestion, htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.SecurityQuestion, new { htmlAttributes = new { @class = "form-control", id = "companyField" } })
+            @Html.ValidationMessageFor(model => model.SecurityQuestion, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" id="registerBtn" value="Register" class="btn btn-success" />
+        </div>
+    </div>
+</div>
+}
+
+<hr />
+
+<div>
+    @Html.ActionLink("Back to Home", "Index", "Home", null, new { @class = "btn btn-dark" })
+</div>
+
+@section scripts {
+    <script>
+        $(() => {
+            $("#registerBtn").click(() => {
+                name = $("#name").val();
+                email = $("#email").val();
+                password = $("#password").val();
+                confirmPassword = $("#confirmPassword").val();
+
+                if (name == "") {
+                    $("#errorMsgName").fadeIn(500);
+                    $("#errorMsgName").fadeOut(5000);
+                    return false;
+                }
+
+                if (email == "") {
+                    $("#errorMsgEmail").fadeIn(500);
+                    $("#errorMsgEmail").fadeOut(5000);
+                    return false;
+                }
+
+                if (password == "" || password.length < 8) {
+                    $("#errorMsgPassword").fadeIn(500);
+                    $("#errorMsgPassword").fadeOut(5000);
+                    return false;
+                }
+
+                if (confirmPassword == "" || confirmPassword != password) {
+                    $("#errorMsgConfirmPassword").fadeIn(500);
+                    $("#errorMsgConfirmPassword").fadeOut(5000);
+                    return false;
+                }
+
+                if ($("#imageInput").val() == "") {
+                    $("#err-div").fadeIn();
+                    $("#err-msg").empty();
+                    $("#err-msg").append("Please Choose Personal Photo!");
+                    return false;
+                }
+
+                if ($("#imageInput").val() != "") {
+                    // Check image extetion
+                    var imgValue = document.getElementById('imageInput').value,
+                        imgExtention = imgValue.substr(imgValue.lastIndexOf(".") + 1),
+                        validExtentions = ['png', 'jpg', 'gif'];
+                    if ($.inArray(imgExtention, validExtentions) == -1) {
+                        $("#err-div").fadeIn();
+                        $("#err-msg").empty();
+                        $("#err-msg").append("Please Choose Valid Image Extention ")
+                        return false;
+                    }
+
+                    // Check image Size
+                    var imgSize = document.getElementById('imageInput').files[0].size / 1024 / 1024;
+
+                    if (imgSize > 2) {
+                        $("#err-div").fadeIn();
+                        $("#err-msg").empty();
+                        $("#err-msg").append("Please Choose Image size < 2mb ")
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+}

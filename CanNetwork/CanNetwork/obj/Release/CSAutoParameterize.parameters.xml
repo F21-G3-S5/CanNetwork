@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="DefaultConnection-Web.config Connection String" description="DefaultConnection Connection String used in web.config by the application to access the database." defaultValue="&#xD;&#xA;   Server=tcp:cannetworkserver.database.windows.net,1433;&#xD;&#xA;   Initial Catalog=CanNetwork.Context.MyDbContext;&#xD;&#xA;   Persist Security Info=False;&#xD;&#xA;   User ID=cannetwork;&#xD;&#xA;   Password=Jobportal123;&#xD;&#xA;   MultipleActiveResultSets=False;&#xD;&#xA;   Encrypt=True;&#xD;&#xA;   TrustServerCertificate=False;&#xD;&#xA;   Connection Timeout=30;" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="D:\\CentennialCollege\\Fall_21\\Software_Development_Project_1\\FinalProject\\CanNetwork\\CanNetwork\\CanNetwork\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='DefaultConnection']/@connectionString" />
+  </parameter>
+</parameters>

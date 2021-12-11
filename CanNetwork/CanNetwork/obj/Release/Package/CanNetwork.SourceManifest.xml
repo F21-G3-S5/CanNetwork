@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sitemanifest>
+  <IisApp path="D:\CentennialCollege\Fall_21\Software_Development_Project_1\FinalProject\CanNetwork\CanNetwork\CanNetwork\obj\Release\Package\PackageTmp" />
+  <setAcl path="D:\CentennialCollege\Fall_21\Software_Development_Project_1\FinalProject\CanNetwork\CanNetwork\CanNetwork\obj\Release\Package\PackageTmp" setAclResourceType="Directory" />
+  <setAcl path="D:\CentennialCollege\Fall_21\Software_Development_Project_1\FinalProject\CanNetwork\CanNetwork\CanNetwork\obj\Release\Package\PackageTmp" setAclUser="anonymousAuthenticationUser" setAclResourceType="Directory" />
+</sitemanifest>

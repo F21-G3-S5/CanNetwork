@@ -322,6 +322,7 @@
     <Content Include="Views\AdminViewModel\ShowAllAdmins.cshtml" />
     <Content Include="Views\AdminViewModel\AddNewAdmin.cshtml" />
     <Content Include="Views\AdminViewModel\Delete.cshtml" />
+    <None Include="Properties\PublishProfiles\CanNetwork - Web Deploy.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

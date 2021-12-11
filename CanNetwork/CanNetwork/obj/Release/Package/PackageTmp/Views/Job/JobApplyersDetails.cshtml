@@ -1,0 +1,131 @@
+﻿@model CanNetwork.Models.JobViewModel
+@using CanNetwork.Models
+@using GridMvc.Html
+@using CanNetwork.Context
+
+@{
+    MyDbContext db = new MyDbContext();
+    ViewBag.Title = "Job Applyers Details";
+}
+
+<style>
+    div.alert.alert-primary {
+        border-left: 6px solid #0094ff;
+        padding: 10px;
+        text-transform: capitalize;
+        font-size: 22px;
+        font-weight: 500;
+    }
+</style>
+
+<h2 class="text-primary mb-3">Job Applicants Details</h2>
+
+<hr />
+
+<div class="jobDetails">
+
+    <div class="alert alert-primary">@Model.JobTitle</div>
+
+    @helper CustomRenderingOfColumn(SeekerRegistration seeker)
+    {
+        if (Session["UserName"] != null)
+        {
+            @Html.ActionLink("View Details", "SeekerDetails", "RegisterUser", new { id = seeker.Id }, new { @class = "btn btn-primary" })
+        }
+        else
+        {
+            <b></b>
+        }
+    }
+
+    @helper CustomRenderingOfColumnState(SeekerRegistration seeker)
+    {
+        if (seeker.IsActive == true)
+        {
+            <b class="text-success">Active</b>
+        }
+        else
+        {
+            <b class="text-danger">Block</b>
+        }
+    }
+
+    @helper CustomRenderingOfColumn2(ApplyedJob applyedJob)
+    {
+        if (Session["UserName"] != null)
+        {
+            <span>@applyedJob.SeekerRegistration.City.CityName - @applyedJob.SeekerRegistration.Country.CountryName</span>
+        }
+        else
+        {
+            <b></b>
+        }
+    }
+
+    <div style="width: 100%">
+        @Html.Grid(Model.ApplyedJobs).Columns(columns =>
+   {
+   columns.Add(o => o.SeekerRegistration.Name)
+   .Titled("Name")
+   .Filterable(true)
+   .Sortable(true);
+
+   columns.Add(o => o.SeekerRegistration.Email)
+       .Titled("E-Mail")
+       .Filterable(true)
+       .Sortable(true);
+
+   columns.Add()
+  .Titled("Address")
+  .Encoded(false)
+  .Sanitized(false)
+  .RenderValueAs(o => CustomRenderingOfColumn2(o))
+  .Filterable(true)
+  .Sortable(true);
+
+   columns.Add(o => o.ApplyDate)
+        .Titled("Apply Date")
+        .Filterable(true)
+        .Sortable(true);
+
+   columns.Add()
+   .Titled("State")
+   .Encoded(false)
+   .Sanitized(false)
+   .RenderValueAs(o => CustomRenderingOfColumnState(o.SeekerRegistration))
+   .Sortable(true)
+   .Css("text-center");
+
+   columns.Add()
+.Titled("Applied Jobs")
+.Encoded(false)
+.Sanitized(false)
+.RenderValueAs(o => @<b>[ @db.ApplyedJobs.Where(aj => aj.SeekerRegistrationId == o.SeekerRegistrationId).Count() ]</b>)
+            .Sortable(true)
+            .Css("text-center");
+
+            columns.Add()
+            .Titled("Matched Jobs")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => @<b>[ @db.Jobs.Where(j => j.JobCategory.JobCategoryName == o.SeekerRegistration.SearchOnJobTitle).Count() ]</b>)
+            .Sortable(true)
+            .Css("text-center");
+
+            columns.Add()
+            .Titled("Actions")
+            .Encoded(false)
+            .Sanitized(false)
+            .RenderValueAs(o => CustomRenderingOfColumn(o.SeekerRegistration))
+            .Sortable(true)
+            .Css("text-center");
+
+            }).WithPaging(4).Sortable(true)
+    </div>
+
+    <hr />
+</div>
+
+<p>
+    @Html.ActionLink("Back To List", "ShowApplyersForEachJob", null, new { @class = "btn btn-dark" })
+</p>
