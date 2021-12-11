@@ -14,9 +14,9 @@ namespace CanNetwork
         public void Configuration(IAppBuilder app)
         {
             MyDbContext db = new MyDbContext();
-            if (db.Admins.Where(a=>a.Name == "Abdelrhman").Count() < 1)
+            if (db.Admins.Where(a=>a.Name == "Vamsi").Count() < 1)
             {
-                db.Admins.Add(new Models.Admin { Id = 1, Name = "Abdelrhman", Email = "abdelrhman44@gmail.com", Password = "01128479486" });
+                db.Admins.Add(new Models.Admin { Id = 8, Name = "Vamsi", Email = "vamsi@gmail.com", Password = "0123456789" });
                 db.SaveChanges();
             }
             // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=316888
