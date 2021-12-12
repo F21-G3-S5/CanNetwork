@@ -6,6 +6,6 @@ Weihao Cai
 <br>Kathryn Robertson
 <br>Vamsi Paladugu
 <br>Evilasio Bahia Costa Junior
-<br>Mohamed Kaipally
+<br>Mohamed Kaipally 
 <br>Gagandeep Kaur
 <br>Hasan Khan
