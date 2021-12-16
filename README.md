@@ -2,7 +2,7 @@
 <h2> CanNetwork</h2>
 Web Application developed as part of final project for COMP 231: Software Development Project 1
 <h3> Developers</h3>
-Weihao Cai
+<br>Weihao Cai
 <br>Kathryn Robertson
 <br>Vamsi Paladugu
 <br>Evilasio Bahia Costa Junior
