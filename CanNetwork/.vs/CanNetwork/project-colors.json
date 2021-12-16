@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "d70e3f49-86fb-4cb9-ada0-19fae4f08c16": {
+      "ProjectGuid": "d70e3f49-86fb-4cb9-ada0-19fae4f08c16",
+      "DisplayName": "CanNetwork",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
